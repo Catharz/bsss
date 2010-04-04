@@ -1,0 +1,48 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{BA51DC88-40DF-45CB-BD73-15ACE01F80AE}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="source\BuildStatus.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="tests\BuildStatusTests.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="BuildStatus">
+			<MSBuild Projects="source\BuildStatus.dproj"/>
+		</Target>
+		<Target Name="BuildStatus:Clean">
+			<MSBuild Targets="Clean" Projects="source\BuildStatus.dproj"/>
+		</Target>
+		<Target Name="BuildStatus:Make">
+			<MSBuild Targets="Make" Projects="source\BuildStatus.dproj"/>
+		</Target>
+		<Target Name="BuildStatusTests">
+			<MSBuild Projects="tests\BuildStatusTests.dproj"/>
+		</Target>
+		<Target Name="BuildStatusTests:Clean">
+			<MSBuild Targets="Clean" Projects="tests\BuildStatusTests.dproj"/>
+		</Target>
+		<Target Name="BuildStatusTests:Make">
+			<MSBuild Targets="Make" Projects="tests\BuildStatusTests.dproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="BuildStatus;BuildStatusTests"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="BuildStatus:Clean;BuildStatusTests:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="BuildStatus:Make;BuildStatusTests:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>
