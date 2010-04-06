@@ -1,6 +1,6 @@
 <Projects>
-	<Project activity="Sleeping" lastBuildStatus="Failure" lastBuildTime="2010-03-31T13:34:12.6560000+10:00" webUrl="http://localhost" name="Dev1"/>
-	<Project activity="Building" lastBuildStatus="Failure" lastBuildTime="2010-03-31T13:34:12.6560000+10:00" webUrl="http://localhost" name="Dev2"/>
-	<Project activity="Building" lastBuildStatus="Success" lastBuildTime="2010-03-31T13:34:12.6560000+10:00" webUrl="http://localhost" name="UAT"/>
-	<Project activity="Sleeping" lastBuildStatus="Success" lastBuildTime="2010-03-31T13:34:12.6560000+10:00" webUrl="http://localhost" name="Prod"/>
+	<Project activity="Sleeping" lastBuildStatus="Failure" lastBuildTime="2010-03-31T13:34:12.6560000+10:00" webUrl="http://localhost" name="Sleeping Failed Build"/>
+	<Project activity="Building" lastBuildStatus="Failure" lastBuildTime="2010-03-31T13:34:12.6560000+10:00" webUrl="http://localhost" name="Building Failed Build"/>
+	<Project activity="Building" lastBuildStatus="Success" lastBuildTime="2010-03-31T13:34:12.6560000+10:00" webUrl="http://localhost" name="Building Successful Build"/>
+	<Project activity="Sleeping" lastBuildStatus="Success" lastBuildTime="2010-03-31T13:34:12.6560000+10:00" webUrl="http://localhost" name="Sleeping Successful Build"/>
 </Projects>

@@ -70,6 +70,7 @@ begin
   Top := 0;
   Left := 0;
   iMaxHeight := 0;
+  iTotalWidth := 0;
   for iCounter := 0 to Screen.MonitorCount - 1 do
   begin
     if Screen.Monitors[iCounter].Height > iMaxHeight then
