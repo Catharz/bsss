@@ -73,9 +73,6 @@
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
 						<Parameters Name="RunParams">/s</Parameters>
 					</Parameters>
-					<Language>
-						<Language Name="RootDir">C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\</Language>
-					</Language>
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
 						<VersionInfo Name="AutoIncBuild">False</VersionInfo>

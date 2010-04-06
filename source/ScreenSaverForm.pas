@@ -62,12 +62,22 @@ begin
   tmrAnimate.Enabled := True;
 end;
 
+//TODO: Make this work with screens of any size in any arrangement.
 procedure TfrmScreenSaver.FormActivate(Sender: TObject);
+var
+  iCounter, iTotalWidth, iMaxHeight : Integer;
 begin
   Top := 0;
   Left := 0;
-  Width := Screen.Monitors[Screen.MonitorCount - 1].Left + Screen.Monitors[Screen.MonitorCount - 1].Width;
-  Height := Screen.Monitors[Screen.MonitorCount - 1].Top + Screen.Monitors[Screen.MonitorCount - 1].Height;
+  iMaxHeight := 0;
+  for iCounter := 0 to Screen.MonitorCount - 1 do
+  begin
+    if Screen.Monitors[iCounter].Height > iMaxHeight then
+      iMaxHeight := Screen.Monitors[iCounter].Height;
+    iTotalWidth := iTotalWidth + Screen.Monitors[iCounter].Width;
+  end;
+  Width := iTotalWidth;
+  Height := iMaxHeight;
 end;
 
 procedure TfrmScreenSaver.tmrAnimateTimer(Sender: TObject);

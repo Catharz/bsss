@@ -56,6 +56,7 @@ begin
       end
       else
       begin
+        //TODO: Make the form object oriented and instantiate one for each screen.
         if Copy(ParamStr(iParam), 0, 2) = '/s' then
         begin
           Application.CreateForm(TfrmScreenSaver, frmScreenSaver);
@@ -64,6 +65,7 @@ begin
             MessageDlg('Could not load registry settings for screen saver!', mtError, [mbOk], 0);
             Application.Terminate;
           end;
+          //TODO: Create an update controller that will read the XML for the screens
           frmScreenSaver.FileName := config.XmlFileUrl;
           frmScreenSaver.UpdateFrequency := config.UpdateFrequency;
           frmScreenSaver.AnimationFrequency := config.AnimationFrequency;
@@ -72,6 +74,7 @@ begin
         end
         else
         begin
+          //TODO: Work out how to create a preview screen
           if Copy(ParamStr(iParam), 0, 2) = '/p' then
             //Do nothing, we don't have a preview
           else
