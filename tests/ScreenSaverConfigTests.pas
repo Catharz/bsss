@@ -8,7 +8,7 @@ uses
 type
   TScreenSaverConfigTests = class(TTestCase)
   private
-    FScreenSaverConfig: TScreenSaverConfig;
+    FScreenSaverConfig, backupConfig: TScreenSaverConfig;
   public
     procedure SetUp; override;
     procedure TearDown; override;
@@ -32,6 +32,8 @@ type
     procedure SaveConfigWithInvalidUrlShouldThrowException;
     procedure SaveConfigWithInvalidUpdateFrequencyShouldThrowException;
     procedure SaveConfigWithInvalidAnimationFrequencyShouldThrowException;
+
+    procedure SaveConfigShouldChangeRegistryValues;
   end;
 
 implementation
@@ -40,12 +42,25 @@ procedure TScreenSaverConfigTests.SetUp;
 begin
   inherited;
   FScreenSaverConfig := TScreenSaverConfig.Create;
+  //I know it will slow these tests down
+  //but I want do want to test the settings are actually saved
+  if FScreenSaverConfig.LoadConfig then
+  begin
+    backupConfig := TScreenSaverConfig.Create;
+    backupConfig.Assign(FScreenSaverConfig);
+  end
+  else
+    backupConfig := nil;
 end;
 
 procedure TScreenSaverConfigTests.TearDown;
 begin
-  FScreenSaverConfig.Free;
-  FScreenSaverConfig := nil;
+  if assigned(backupConfig) then
+  begin
+    backupConfig.SaveConfig;
+    FreeAndNil(backupConfig);
+  end;
+  FreeAndNil(FScreenSaverConfig);
   inherited;
 end;
 
@@ -240,6 +255,27 @@ begin
 
   //assert
   CheckTrue(ReturnValue);
+end;
+
+procedure TScreenSaverConfigTests.SaveConfigShouldChangeRegistryValues;
+begin
+  //arrange
+  FScreenSaverConfig.XmlFileURL := 'file://junk.xml';
+  FScreenSaverConfig.AnimationFrequency := 10;
+  FScreenSaverConfig.UpdateFrequency := 10;
+
+  //act
+  FScreenSaverConfig.SaveConfig;
+  FScreenSaverConfig.XmlFileURL := '';
+  FScreenSaverConfig.AnimationFrequency := 0;
+  FScreenSaverConfig.UpdateFrequency := 0;
+  if not FScreenSaverConfig.LoadConfig then
+    Fail('Config failed to reload!');
+
+  //assert
+  CheckEquals(FScreenSaverConfig.XmlFileURL, 'file://junk.xml');
+  CheckEquals(FScreenSaverConfig.AnimationFrequency, 10);
+  CheckEquals(FScreenSaverConfig.UpdateFrequency, 10);
 end;
 
 procedure TScreenSaverConfigTests.SaveConfigWithInvalidAnimationFrequencyShouldThrowException;

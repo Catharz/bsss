@@ -48,7 +48,7 @@ implementation
 { TScreenSaverConfig }
 
 const
-  RegistryPath              = '\Control Panel\Screen Saver.BuildStatus';
+  RegistryPath = '\Control Panel\Screen Saver.BuildStatus';
 
 procedure TScreenSaverConfig.Assign(config: TScreenSaverConfig);
 begin

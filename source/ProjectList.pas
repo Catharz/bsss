@@ -98,58 +98,45 @@ var
   sAppName: string;
   sl : TStringList;
 begin
+  sAppName := ExtractFileName(Application.ExeName) ;
+  hSession := InternetOpen(PChar(sAppName), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0) ;
   try
-    sAppName := ExtractFileName(Application.ExeName) ;
-    hSession := InternetOpen(PChar(sAppName), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0) ;
-    try
-      hURL := InternetOpenURL(hSession, PChar(xmlFileURL), nil, 0, 0, 0) ;
-      if hURL <> nil then
-      begin
+    hURL := InternetOpenURL(hSession, PChar(xmlFileURL), nil, 0, 0, 0) ;
+    if hURL <> nil then
+    begin
+      try
+        AssignFile(f, localFileName) ;
         try
-          AssignFile(f, localFileName) ;
-          try
-            Rewrite(f,1);
-            repeat
-              InternetReadFile(hURL, @Buffer, SizeOf(Buffer), BufferLen) ;
-              BlockWrite(f, Buffer, BufferLen);
-            until BufferLen = 0;
-          finally
-            CloseFile(f) ;
-          end;
-          result := True;
+          Rewrite(f,1);
+          repeat
+            InternetReadFile(hURL, @Buffer, SizeOf(Buffer), BufferLen) ;
+            BlockWrite(f, Buffer, BufferLen);
+          until BufferLen = 0;
         finally
-          InternetCloseHandle(hURL);
+          CloseFile(f) ;
         end;
-      end
-      else
-      begin
-        sl := TStringList.Create;
-        try
-          sl.Add('<Projects>');
-          sl.Add('<Project activity="Sleeping" lastBuildStatus="Failure" lastBuildTime="2010-01-01T12:30:00.0000000+10:00" webUrl="http://loclahost/" name="Error: Cannot access XML URL!"/>');
-          sl.Add('</Projects>');
-          sl.SaveToFile(localFileName);
-          Result := True;
-        finally
-          FreeAndNil(sl);
-        end;
+        result := True;
+      finally
+        InternetCloseHandle(hURL);
       end;
-    finally
-      InternetCloseHandle(hSession);
     end
-  except
-    //If we got here, there has been a problem downloading or writing the file.
-    sl := TStringList.Create;
-    try
-      sl.Add('<Projects>');
-      sl.Add('<Project activity="Sleeping" lastBuildStatus="Failure" lastBuildTime="2010-01-01T12:30:00.0000000+10:00" webUrl="http://loclahost/" name="Error: Cannot access XML URL!"/>');
-      sl.Add('</Projects>');
-      sl.SaveToFile(localFileName);
-      Result := True;
-    finally
-      FreeAndNil(sl);
+    else
+    begin
+      //if hURL was nil the URL was invalid.  Write a dummy file to show this
+      sl := TStringList.Create;
+      try
+        sl.Add('<Projects>');
+        sl.Add('<Project activity="Sleeping" lastBuildStatus="Failure" lastBuildTime="2010-01-01T12:30:00.0000000+10:00" webUrl="http://loclahost/" name="Error: Cannot access XML URL!"/>');
+        sl.Add('</Projects>');
+        sl.SaveToFile(localFileName);
+        Result := True;
+      finally
+        FreeAndNil(sl);
+      end;
     end;
-  end;
+  finally
+    InternetCloseHandle(hSession);
+  end
 end;
 
 function TProjectList.GetCount: Integer;
