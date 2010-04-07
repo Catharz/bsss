@@ -20,7 +20,7 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
-			<DCC_DependencyCheckOutputName>BuildStatus.exe</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>BuildStatus.scr</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_Platform>x86</DCC_Platform>
 		</PropertyGroup>
@@ -46,6 +46,10 @@
 				<Form>frmScreenSaverSetup</Form>
 			</DCCReference>
 			<DCCReference Include="ScreenSaverConfig.pas"/>
+			<DCCReference Include="ScreenSaverController.pas">
+				<Form>dmScreenSaverController</Form>
+				<DesignClass>TDataModule</DesignClass>
+			</DCCReference>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

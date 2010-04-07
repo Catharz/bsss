@@ -12,7 +12,6 @@ object frmScreenSaver: TfrmScreenSaver
   Font.Style = []
   OldCreateOrder = False
   Position = poDesktopCenter
-  OnActivate = FormActivate
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
@@ -24,12 +23,5 @@ object frmScreenSaver: TfrmScreenSaver
     OnTimer = tmrAnimateTimer
     Left = 120
     Top = 96
-  end
-  object tmrUpdate: TTimer
-    Enabled = False
-    Interval = 60000
-    OnTimer = tmrUpdateTimer
-    Left = 312
-    Top = 104
   end
 end

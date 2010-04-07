@@ -7,9 +7,9 @@ uses
 
 type
   TProjectList = class(TObject)
-  private
-    FObjectList : TObjectList;
     FFileName : String;
+    FObjectList : TObjectList;
+  private
     function GetCount: Integer;
     function DownloadFile(const xmlFileURL, localFileName: String): Boolean;
   protected
@@ -77,6 +77,7 @@ constructor TProjectList.Create;
 begin
   inherited;
   FObjectList := TObjectList.Create(True);
+  FFileName := '';
 end;
 
 destructor TProjectList.Destroy;
@@ -188,11 +189,10 @@ var
   sTempFileName : String;
 begin
   FFileName := 'projects.xml';
-  sTempFileName := Copy(sFileName, 0, 8);
-  if (LowerCase(sTempFileName) = 'file:///') then
-  begin
-    sFileName := FileURLToPath(sTempFileName);
-  end;
+  if (LowerCase(Copy(sFileName, 0, 7)) = 'file://') then
+    sTempFileName := FileURLToPath(sFileName)
+  else
+    sTempFileName := sFileName;
 
   if DownloadFile(sFileName, FFileName) then
     ReadXML

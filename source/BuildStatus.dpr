@@ -9,7 +9,10 @@ uses
   Project in 'Project.pas',
   ProjectList in 'ProjectList.pas',
   ScreenSaverSetup in 'ScreenSaverSetup.pas' {frmScreenSaverSetup},
-  ScreenSaverConfig in 'ScreenSaverConfig.pas';
+  ScreenSaverConfig in 'ScreenSaverConfig.pas',
+  ScreenSaverController in 'ScreenSaverController.pas' {dmScreenSaverController: TDataModule};
+
+{$E scr}
 
 {$R *.res}
 
@@ -19,19 +22,20 @@ var
 
 begin
   Application.Initialize;
+  Application.Title := 'Build Status Screen Saver';
+  Application.CreateForm(TdmScreenSaverController, dmScreenSaverController);
   config := TScreenSaverConfig.Create;
   try
     for iParam := 1 to ParamCount do
     begin
       if Copy(ParamStr(iParam), 0, 2) = '/c' then
       begin
-        //Show the config screen
-        frmScreenSaverSetup := TfrmScreenSaverSetup.Create(Application);
         if not config.LoadConfig then
         begin
           MessageDlg('Could not load registry settings for screen saver!', mtError, [mbOk], 0);
           Application.Terminate;
         end;
+        frmScreenSaverSetup := TfrmScreenSaverSetup.Create(Application);
         frmScreenSaverSetup.edtFileName.Text := config.XmlFileUrl;
         frmScreenSaverSetup.tbUpdateFrequency.Position := config.UpdateFrequency;
         frmScreenSaverSetup.tbAnimationFrequency.Position := config.AnimationFrequency;
@@ -56,21 +60,17 @@ begin
       end
       else
       begin
-        //TODO: Make the form object oriented and instantiate one for each screen.
         if Copy(ParamStr(iParam), 0, 2) = '/s' then
         begin
-          Application.CreateForm(TfrmScreenSaver, frmScreenSaver);
           if not config.loadConfig then
           begin
             MessageDlg('Could not load registry settings for screen saver!', mtError, [mbOk], 0);
             Application.Terminate;
           end;
-          //TODO: Create an update controller that will read the XML for the screens
-          frmScreenSaver.FileName := config.XmlFileUrl;
-          frmScreenSaver.UpdateFrequency := config.UpdateFrequency;
-          frmScreenSaver.AnimationFrequency := config.AnimationFrequency;
-          frmScreenSaver.UpdateProjectStatus;
-          frmScreenSaver.Animate;
+          dmScreenSaverController.FileName := config.XmlFileUrl;
+          dmScreenSaverController.UpdateFrequency := config.UpdateFrequency;
+          dmScreenSaverController.AnimationFrequency := config.AnimationFrequency;
+          dmScreenSaverController.StartScreenSaver;
         end
         else
         begin
