@@ -32,6 +32,7 @@ type
 
     function LoadConfig : Boolean;
     procedure SaveConfig;
+    procedure Assign(config : TScreenSaverConfig);
 
     function ValidateUpdateFrequency(value : Integer) : Boolean;
     function ValidateAnimationFrequency(value : Integer) : Boolean;
@@ -47,7 +48,14 @@ implementation
 { TScreenSaverConfig }
 
 const
-  RegistryPath              = '\Control Panel\Screen Saver.ccTrySS';
+  RegistryPath              = '\Control Panel\Screen Saver.BuildStatus';
+
+procedure TScreenSaverConfig.Assign(config: TScreenSaverConfig);
+begin
+  FXmlFileUrl := config.XmlFileURL;
+  FUpdateFrequency := config.UpdateFrequency;
+  FAnimationFrequency := config.AnimationFrequency;
+end;
 
 constructor TScreenSaverConfig.Create;
 begin

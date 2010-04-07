@@ -7,7 +7,7 @@ uses
 
 type
   TProjectList = class(TObject)
-    FFileName : String;
+    FTempFileName : String;
     FObjectList : TObjectList;
   private
     function GetCount: Integer;
@@ -77,7 +77,7 @@ constructor TProjectList.Create;
 begin
   inherited;
   FObjectList := TObjectList.Create(True);
-  FFileName := '';
+  FTempFileName := 'projects.xml';
 end;
 
 destructor TProjectList.Destroy;
@@ -188,13 +188,12 @@ procedure TProjectList.loadFromFile(sFileName: String);
 var
   sTempFileName : String;
 begin
-  FFileName := 'projects.xml';
   if (LowerCase(Copy(sFileName, 0, 7)) = 'file://') then
     sTempFileName := FileURLToPath(sFileName)
   else
     sTempFileName := sFileName;
 
-  if DownloadFile(sFileName, FFileName) then
+  if DownloadFile(sFileName, FTempFileName) then
     ReadXML
   else
   begin
@@ -214,7 +213,7 @@ var
   stream : TFileStream;
 begin
   FXMLDocument := CreateXMLDoc;
-  stream := TFileStream.Create(FFileName, fmOpenRead);
+  stream := TFileStream.Create(FTempFileName, fmOpenRead);
   try
     if not FXMLDocument.LoadFromStream(stream) then
       raise Exception.Create('Source document is not valid');
