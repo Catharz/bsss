@@ -32,6 +32,9 @@ begin
       while frmScreenSaverSetup.ShowModal = mrOk do
       begin
         try
+          dmScreenSaverController.Config.XmlFileURL := frmScreenSaverSetup.edtFileName.Text;
+          dmScreenSaverController.Config.AnimationFrequency := frmScreenSaverSetup.tbAnimationFrequency.Position;
+          dmScreenSaverController.Config.UpdateFrequency := frmScreenSaverSetup.tbUpdateFrequency.Position;
           dmScreenSaverController.Config.SaveConfig;
           Break;
         except
