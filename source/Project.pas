@@ -49,6 +49,11 @@ end;
 constructor TProject.Create;
 begin
   inherited;
+  FName := 'Unnamed Project';
+  FActivity := 'Sleeping';
+  FLastBuildStatus := 'Success';
+  FLastBuildTime := '1980-01-01T00:00:00.0000000+10:00';
+  FURL := '';
 end;
 
 function TProject.Equals(proj: TProject): boolean;
