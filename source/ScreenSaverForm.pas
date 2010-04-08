@@ -100,7 +100,7 @@ begin
       if TProject(projectList[iCounter]).lastBuildStatus = 'Success' then
         tmpLabel.Font.Color := clYellow
       else
-        tmpLabel.Font.Color := clWebOrangeRed;
+        tmpLabel.Font.Color := clPurple;
       tmpLabel.Font.Style := [fsItalic];
     end
     else

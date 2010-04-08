@@ -91,11 +91,11 @@ end;
 procedure TdmScreenSaverController.SetupScreen(form: TfrmScreenSaver; monitor: TMonitor; animationFrequency: Integer; projectList: TProjectList);
 begin
   fScreenList.Add(form);
-  frmScreenSaver.Monitor := monitor;
-  frmScreenSaver.AnimationFrequency := animationFrequency;
-  frmScreenSaver.UpdateProjects(projectList);
-  frmScreenSaver.Show;
-  frmScreenSaver.Animate;
+  form.AnimationFrequency := animationFrequency;
+  form.UpdateProjects(projectList);
+  form.Show;
+  form.Monitor := monitor;
+  form.Animate;
 end;
 
 procedure TdmScreenSaverController.tmrUpdateTimer(Sender: TObject);
