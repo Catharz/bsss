@@ -3,7 +3,7 @@ object frmScreenSaverSetup: TfrmScreenSaverSetup
   Top = 199
   ActiveControl = edtFileName
   BorderStyle = bsDialog
-  Caption = 'ccTray Screen Saver Config'
+  Caption = 'Build Status Screen Saver Config'
   ClientHeight = 220
   ClientWidth = 466
   Color = clBtnFace

@@ -12,8 +12,6 @@ uses
   ScreenSaverConfig in 'ScreenSaverConfig.pas',
   ScreenSaverController in 'ScreenSaverController.pas' {dmScreenSaverController: TDataModule};
 
-{$E scr}
-
 {$R *.res}
 
 var
