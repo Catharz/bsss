@@ -77,7 +77,7 @@ constructor TProjectList.Create;
 begin
   inherited;
   FObjectList := TObjectList.Create(True);
-  FTempFileName := '%TEMP%\projects.xml';
+  FTempFileName := GetEnvironmentVariable('TEMP') + '\projects.xml';
 end;
 
 destructor TProjectList.Destroy;
