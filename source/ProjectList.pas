@@ -11,7 +11,9 @@ type
     FObjectList : TObjectList;
   private
     function GetCount: Integer;
-    function DownloadFile(const xmlFileURL, localFileName: String): Boolean;
+    function GetXMLFile(const xmlFileURL, localFileName: String): Boolean;
+    procedure CreateDummyFile(const localFileName: string);
+    function DownloadFile(const localFileName: string; hURL: Pointer) : Boolean;
   protected
     function GetItem(Index: Integer): TProject;
     procedure SetItem(Index: Integer; const Value: TProject);
@@ -54,6 +56,47 @@ begin
     FObjectList.Remove(FObjectList.Items[0]);
 end;
 
+function TProjectList.DownloadFile(const localFileName: string; hURL: Pointer) : Boolean;
+const
+  BufferSize = 1024;
+var
+  Buffer: array[1..1024] of Byte;
+  f: file;
+  BufferLen: Cardinal;
+begin
+  try
+    AssignFile(f, localFileName);
+    try
+      Rewrite(f, 1);
+      repeat
+        InternetReadFile(hURL, @Buffer, SizeOf(Buffer), BufferLen);
+        BlockWrite(f, Buffer, BufferLen);
+      until BufferLen = 0;
+    finally
+      CloseFile(f);
+    end;
+    Result := True;
+  finally
+    InternetCloseHandle(hURL);
+  end;
+end;
+
+procedure TProjectList.CreateDummyFile(const localFileName: string);
+var
+  sl: TStringList;
+begin
+  //if hURL was nil the URL was invalid.  Write a dummy file to show this
+  sl := TStringList.Create;
+  try
+    sl.Add('<Projects>');
+    sl.Add('<Project activity="Sleeping" lastBuildStatus="Failure" lastBuildTime="2010-01-01T12:30:00.0000000+10:00" webUrl="http://loclahost/" name="Error: Cannot access XML URL!"/>');
+    sl.Add('</Projects>');
+    sl.SaveToFile(localFileName);
+  finally
+    FreeAndNil(sl);
+  end;
+end;
+
 function TProjectList.FileURLToPath(sFileName: string) : String;
 var
   ReturnValue : String;
@@ -87,16 +130,10 @@ begin
   inherited;
 end;
 
-function TProjectList.DownloadFile(const xmlFileURL, localFileName: String): Boolean;
-const
-  BufferSize = 1024;
+function TProjectList.GetXMLFile(const xmlFileURL, localFileName: String): Boolean;
 var
   hSession, hURL: HInternet;
-  Buffer: array[1..BufferSize] of Byte;
-  BufferLen: DWORD;
-  f: File;
   sAppName: string;
-  sl : TStringList;
 begin
   sAppName := ExtractFileName(Application.ExeName) ;
   hSession := InternetOpen(PChar(sAppName), INTERNET_OPEN_TYPE_PRECONFIG, nil, nil, 0) ;
@@ -104,35 +141,12 @@ begin
     hURL := InternetOpenURL(hSession, PChar(xmlFileURL), nil, 0, 0, 0) ;
     if hURL <> nil then
     begin
-      try
-        AssignFile(f, localFileName) ;
-        try
-          Rewrite(f,1);
-          repeat
-            InternetReadFile(hURL, @Buffer, SizeOf(Buffer), BufferLen) ;
-            BlockWrite(f, Buffer, BufferLen);
-          until BufferLen = 0;
-        finally
-          CloseFile(f) ;
-        end;
-        result := True;
-      finally
-        InternetCloseHandle(hURL);
-      end;
+      Result := DownloadFile(localFileName, hURL);
     end
     else
     begin
-      //if hURL was nil the URL was invalid.  Write a dummy file to show this
-      sl := TStringList.Create;
-      try
-        sl.Add('<Projects>');
-        sl.Add('<Project activity="Sleeping" lastBuildStatus="Failure" lastBuildTime="2010-01-01T12:30:00.0000000+10:00" webUrl="http://loclahost/" name="Error: Cannot access XML URL!"/>');
-        sl.Add('</Projects>');
-        sl.SaveToFile(localFileName);
-        Result := True;
-      finally
-        FreeAndNil(sl);
-      end;
+      CreateDummyFile(localFileName);
+      Result := True;
     end;
   finally
     InternetCloseHandle(hSession);
@@ -180,7 +194,7 @@ begin
   else
     sTempFileName := sFileName;
 
-  if DownloadFile(sFileName, FTempFileName) then
+  if GetXMLFile(sFileName, FTempFileName) then
     ReadXML
   else
   begin
