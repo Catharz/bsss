@@ -2,7 +2,8 @@ unit ScreenSaverSetup;
 
 interface
 
-uses Windows, SysUtils, Classes, Graphics, Forms, Controls, StdCtrls, 
+uses
+  Windows, SysUtils, Classes, Graphics, Forms, Controls, StdCtrls, 
   Buttons, ExtCtrls, Dialogs, XPMan, ComCtrls, ScreenSaverConfig;
 
 type

@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, StdCtrls, Forms,
-  Dialogs, ExtCtrls, Contnrs, ProjectList;
+  Dialogs, ExtCtrls, Contnrs,
+  ProjectList;
 
 type
   TfrmScreenSaver = class(TForm)
@@ -38,10 +39,10 @@ var
 
 implementation
 
+{$R *.dfm}
+
 uses
   Project;
-
-{$R *.dfm}
 
 procedure TfrmScreenSaver.Animate;
 var

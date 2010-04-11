@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>2010/04/06 17:46:06.772.pas,C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\Unit1.pas=C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\ScreenList.pas</Transaction>
-    <Transaction>2010/04/06 17:47:46.750.pas,C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\Unit1.pas=C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\Screen.pas</Transaction>
+    <Transaction>2010/04/06 17:46:06.772.pas,C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\ScreenList.pas=C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\Unit1.pas</Transaction>
+    <Transaction>2010/04/06 17:47:46.750.pas,C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\Screen.pas=C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\Unit1.pas</Transaction>
     <Transaction>2010/04/06 17:53:04.029.pas,C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\Screen.pas=</Transaction>
     <Transaction>2010/04/06 17:53:10.974.pas,C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\ScreenList.pas=</Transaction>
-    <Transaction>2010/04/07 07:38:23.257.pas,C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\Unit1.pas=C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\ScreenSaverController.pas</Transaction>
-    <Transaction>2010/04/07 07:38:23.257.dfm,C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\Unit1.dfm=C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\ScreenSaverController.dfm</Transaction>
+    <Transaction>2010/04/07 07:38:23.257.dfm,C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\ScreenSaverController.dfm=C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\Unit1.dfm</Transaction>
+    <Transaction>2010/04/07 07:38:23.257.pas,C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\ScreenSaverController.pas=C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\Unit1.pas</Transaction>
   </Transactions>
 </BorlandProject>
