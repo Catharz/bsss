@@ -64,6 +64,12 @@ var
   f: file;
   BufferLen: Cardinal;
 begin
+  //This should not have been called with a nil URL
+  if hURL = nil then
+  begin
+    Result := False;
+    Exit;
+  end;
   try
     AssignFile(f, localFileName);
     try
