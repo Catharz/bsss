@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, StdCtrls, Forms,
   Dialogs, ExtCtrls, Contnrs,
-  ProjectList;
+  Project, ProjectList;
 
 type
   TfrmScreenSaver = class(TForm)
@@ -24,6 +24,8 @@ type
     FAnimationFrequency : Integer;
     procedure SetAnimationFrequency(const Value: Integer);
     procedure SetMonitor(const Value: TMonitor);
+    procedure ClearLabels;
+    procedure ConfigureLabel(var tmpLabel: TLabel; tmpProject: TProject);
   public
     { Public declarations }
     property Monitor : TMonitor read fMonitor write SetMonitor;
@@ -41,9 +43,6 @@ implementation
 
 {$R *.dfm}
 
-uses
-  Project;
-
 procedure TfrmScreenSaver.Animate;
 var
   i : Integer;
@@ -56,6 +55,45 @@ begin
     PlaceLabel(tmpLabel);
   end;
   tmrAnimate.Enabled := True;
+end;
+
+procedure TfrmScreenSaver.ConfigureLabel(var tmpLabel: TLabel; tmpProject: TProject);
+begin
+  tmpLabel.Caption := tmpProject.Name;
+  tmpLabel.Font.Name := 'Ariel';
+  if tmpProject.Activity = 'Building' then
+  begin
+    if tmpProject.lastBuildStatus = 'Success' then
+      tmpLabel.Font.Color := clYellow
+    else
+      tmpLabel.Font.Color := clPurple;
+    tmpLabel.Font.Style := [fsItalic];
+  end
+  else
+  begin
+    if tmpProject.lastBuildStatus = 'Success' then
+      tmpLabel.Font.Color := clGreen
+    else
+      tmpLabel.Font.Color := clRed;
+    tmpLabel.Font.Style := [];
+  end;
+  tmpLabel.Font.Size := 32;
+  tmpLabel.AutoSize := True;
+  tmpLabel.Transparent := True;
+  tmpLabel.Parent := Self;
+end;
+
+procedure TfrmScreenSaver.ClearLabels;
+var
+  tmpLabel: TLabel;
+begin
+  //Remove all the labels
+  while labelList.Count > 0 do
+  begin
+    tmpLabel := TLabel(labelList.Items[0]);
+    labelList.Remove(tmpLabel);
+  end;
+  labelList.Clear;
 end;
 
 procedure TfrmScreenSaver.tmrAnimateTimer(Sender: TObject);
@@ -81,41 +119,16 @@ procedure TfrmScreenSaver.UpdateProjects(projectList: TProjectList);
 var
   iCounter : Integer;
   tmpLabel : TLabel;
+  tmpProject : TProject;
 begin
-  //Remove all the labels
-  while labelList.Count > 0 do
-  begin
-    tmpLabel := TLabel(labelList.Items[0]);
-    labelList.Remove(tmpLabel);
-  end;
-  labelList.Clear;
+  ClearLabels;
 
   //Create the labels
   for iCounter := 0 to projectList.Count - 1 do
   begin
+    tmpProject := TProject(projectList[iCounter]);
     tmpLabel := TLabel.Create(self);
-    tmpLabel.Caption := TProject(projectList[iCounter]).Name;
-    tmpLabel.Font.Name := 'Ariel';
-    if TProject(projectList[iCounter]).Activity = 'Building' then
-    begin
-      if TProject(projectList[iCounter]).lastBuildStatus = 'Success' then
-        tmpLabel.Font.Color := clYellow
-      else
-        tmpLabel.Font.Color := clPurple;
-      tmpLabel.Font.Style := [fsItalic];
-    end
-    else
-    begin
-      if TProject(projectList[iCounter]).lastBuildStatus = 'Success' then
-        tmpLabel.Font.Color := clGreen
-      else
-        tmpLabel.Font.Color := clRed;
-      tmpLabel.Font.Style := [];
-    end;
-    tmpLabel.Font.Size := 32;
-    tmpLabel.AutoSize := True;
-    tmpLabel.Transparent := True;
-    tmpLabel.Parent := Self;
+    ConfigureLabel(tmpLabel, tmpProject);
     PlaceLabel(tmpLabel);
     tmpLabel.Visible := True;
     labelList.Add(tmpLabel);

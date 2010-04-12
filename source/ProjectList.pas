@@ -65,7 +65,7 @@ var
   BufferLen: Cardinal;
 begin
   //This should not have been called with a nil URL
-  if hURL = nil then
+  if hURL <> nil then
   begin
     Result := False;
     Exit;
