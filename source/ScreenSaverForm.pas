@@ -87,7 +87,6 @@ procedure TfrmScreenSaver.ClearLabels;
 var
   tmpLabel: TLabel;
 begin
-  //Remove all the labels
   while labelList.Count > 0 do
   begin
     tmpLabel := TLabel(labelList.Items[0]);

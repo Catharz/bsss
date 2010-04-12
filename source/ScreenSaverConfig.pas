@@ -77,16 +77,19 @@ begin
 
   //Validate the values.
   //If a value isn't valid, set it to the default and save it
+
   if not ValidateXmlFileUrl(FXmlFileUrl) then
   begin
     FXmlFileUrl := DefaultXmlFileUrl;
     WriteRegistryStringValue(RegistryPath, 'XMLSource', DefaultXmlFileUrl);
   end;
+
   if not ValidateUpdateFrequency(FUpdateFrequency) then
   begin
     FUpdateFrequency := DefaultUpdateFrequency;
     WriteRegistryIntValue(RegistryPath, 'UpdateFrequency', DefaultUpdateFrequency);
   end;
+
   if not ValidateAnimationFrequency(FAnimationFrequency) then
   begin
     FAnimationFrequency := DefaultAnimationFrequency;
@@ -106,6 +109,7 @@ begin
       Exit;
     end;
   end;
+
   //Open the key
   if not reg.OpenKey(path, False) then
   begin

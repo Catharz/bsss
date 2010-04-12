@@ -76,9 +76,11 @@ var
 begin
   ReadProjectStatus;
   fScreenList := TObjectList.Create;
+
   //Add the first (existing) screen to the list
   Application.CreateForm(TfrmScreenSaver, frmScreenSaver);
   SetupScreen(frmScreenSaver, Screen.Monitors[0], fConfig.AnimationFrequency, fProjectList);
+
   //Setup subsequent screens
   for i := 1 to Screen.MonitorCount - 1 do
   begin
