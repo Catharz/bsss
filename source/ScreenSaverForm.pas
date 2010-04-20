@@ -43,6 +43,9 @@ implementation
 
 {$R *.dfm}
 
+uses
+  ScreenSaverController, FontManager;
+
 procedure TfrmScreenSaver.Animate;
 var
   i : Integer;
@@ -60,24 +63,7 @@ end;
 procedure TfrmScreenSaver.ConfigureLabel(var tmpLabel: TLabel; tmpProject: TProject);
 begin
   tmpLabel.Caption := tmpProject.Name;
-  tmpLabel.Font.Name := 'Ariel';
-  if tmpProject.Activity = 'Building' then
-  begin
-    if tmpProject.lastBuildStatus = 'Success' then
-      tmpLabel.Font.Color := clYellow
-    else
-      tmpLabel.Font.Color := clPurple;
-    tmpLabel.Font.Style := [fsItalic];
-  end
-  else
-  begin
-    if tmpProject.lastBuildStatus = 'Success' then
-      tmpLabel.Font.Color := clGreen
-    else
-      tmpLabel.Font.Color := clRed;
-    tmpLabel.Font.Style := [];
-  end;
-  tmpLabel.Font.Size := 32;
+  tmpLabel.Font := dmController.Config.FontMgr.Font[tmpProject.Activity, tmpProject.BuildStatus];
   tmpLabel.AutoSize := True;
   tmpLabel.Transparent := True;
   tmpLabel.Parent := Self;
@@ -173,13 +159,21 @@ begin
 end;
 
 procedure TfrmScreenSaver.PlaceLabel(aLabel: TLabel);
+var
+  iTries : Integer;
 begin
+  iTries := 0;
   while True do
   begin
     aLabel.Top := random(Height - aLabel.Height);
     aLabel.Left := random(Width - aLabel.Width);
     if not NewControlWillOverlap(aLabel, labelList) then
-      Break;
+      Break
+    else
+      //If it takes more than 100 tries to find a clear spot, then just overlap
+      if (iTries > 100) then
+        Break;
+    inc(iTries);
   end;
 end;
 

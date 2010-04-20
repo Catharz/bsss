@@ -3,12 +3,15 @@ unit ProjectListTests;
 interface
 
 uses
-  Windows, SysUtils, Classes, TestFramework, TestExtensions, ProjectList;
+  Windows, SysUtils, Classes, TestFramework, TestExtensions,
+  ProjectList, ScreenSaverConfig, BuildResultsFile;
 
 type
   TProjectListTests = class(TTestCase)
   private
     FProjectList : TProjectList;
+    FBuildResultsFile : TBuildResultsFile;
+    FConfig : TScreenSaverConfig;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -18,9 +21,6 @@ type
     procedure TestRemove;
     procedure TestIndexOf;
     procedure TestClear;
-    procedure TestLoadFromFile;
-    procedure TestTrippleSlashFileURLToPath;
-    procedure TestDoubleSlashFileURLToPath;
   end;
 
 implementation
@@ -32,23 +32,29 @@ var
   tmpProject : TProject;
 
 const
-  TrippleSlash_XML_URL = 'file:///C:/Users/craig/Documents/RAD%20Studio/Projects/play/ccTraySSTests/test.xml';
-  DoubleSlash_XML_URL  = 'file://C:/Users/craig/Documents/RAD%20Studio/Projects/play/ccTraySSTests/test.xml';
-  PROJECT_NAME         = 'SAMS';
+  TrippleSlash_XML_URL = 'file:///C:/dev/Projects/bsss/test.xml';
+  DoubleSlash_XML_URL  = 'file://C:/dev/Projects/bsss/test.xml';
+  PROJECT_NAME         = 'DEV';
   PROJECT_ACTIVITY     = 'Sleeping';
   PROJECT_BUILD_STATUS = 'Success';
+  PROJECT_BUILD_LABEL  = '0';
   PROJECT_BUILD_TIME   = '2010-03-24T12:30:52.4960000+10:00';
-  PROJECT_URL          = 'http://asiscontint1.awmltd.com.au/FBServer6/BuildLog.aspx?ProjectName=SAMS 5.8.20 (Test Coverage)&amp;BuildID=Latest&amp;Filter=Auto&amp;Tab=Log';
+  PROJECT_URL          = 'http://buildserver/results/';
 
 procedure TProjectListTests.Setup;
 begin
   inherited;
-  FProjectList := TProjectList.Create;
+  //TODO: Replace this with an interface and mock so we're not actually loading a file
+  FConfig := TScreenSaverConfig.Create;
+  FBuildResultsFile := TBuildResultsFile.Create(FConfig);
+  FProjectList := TProjectList.Create(FConfig);
 end;
 
 procedure TProjectListTests.TearDown;
 begin
+  FreeAndNil(FBuildResultsFile);
   FreeAndNil(FProjectList);
+  FreeAndNil(FConfig);
   inherited;
 end;
 
@@ -61,6 +67,7 @@ begin
     PROJECT_NAME,
     PROJECT_ACTIVITY,
     PROJECT_BUILD_STATUS,
+    PROJECT_BUILD_LABEL,
     PROJECT_BUILD_TIME,
     PROJECT_URL);
 
@@ -69,11 +76,12 @@ begin
 
   //assert
   CheckEquals(1, fProjectList.Count);
-  CheckEquals(tmpProject.Name,            fProjectList[iTemp].Name);
-  CheckEquals(tmpProject.Activity,        fProjectList[iTemp].Activity);
-  CheckEquals(tmpProject.LastBuildStatus, fProjectList[iTemp].LastBuildStatus);
-  CheckEquals(tmpProject.LastBuildTime,   fProjectList[iTemp].LastBuildTime);
-  CheckEquals(tmpProject.URL,             fProjectList[iTemp].URL);
+  CheckEquals(tmpProject.Name,        fProjectList[iTemp].Name);
+  CheckEquals(tmpProject.Activity,    fProjectList[iTemp].Activity);
+  CheckEquals(tmpProject.BuildStatus, fProjectList[iTemp].BuildStatus);
+  CheckEquals(tmpProject.BuildLabel,  fProjectList[iTemp].BuildLabel);
+  CheckEquals(tmpProject.BuildTime,   fProjectList[iTemp].BuildTime);
+  CheckEquals(tmpProject.URL,         fProjectList[iTemp].URL);
 
   fProjectList.Remove(tmpProject);
 end;
@@ -81,41 +89,13 @@ end;
 procedure TProjectListTests.TestClear;
 begin
   //arrange
-  fProjectList.loadFromFile(TrippleSlash_XML_URL);
+  fBuildResultsFile.Load(TrippleSlash_XML_URL, fProjectList);
 
   //act
   fProjectList.Clear;
 
   //assert
   CheckEquals(0, fProjectList.Count);
-end;
-
-procedure TProjectListTests.TestDoubleSlashFileURLToPath;
-var
-  sConvertedFileName, sFileName : String;
-begin
-  //arrange
-  sFileName := DoubleSlash_XML_URL;
-
-  //act
-  sConvertedFileName := FProjectList.FileURLToPath(sFileName);
-
-  //assert
-  CheckEquals('C:\Users\craig\Documents\RAD Studio\Projects\play\ccTraySSTests\test.xml', sConvertedFileName);
-end;
-
-procedure TProjectListTests.TestTrippleSlashFileURLToPath;
-var
-  sConvertedFileName, sFileName : String;
-begin
-  //arrange
-  sFileName := TrippleSlash_XML_URL;
-
-  //act
-  sConvertedFileName := FProjectList.FileURLToPath(sFileName);
-
-  //assert
-  CheckEquals('C:\Users\craig\Documents\RAD Studio\Projects\play\ccTraySSTests\test.xml', sConvertedFileName);
 end;
 
 procedure TProjectListTests.TestIndexOf;
@@ -127,6 +107,7 @@ begin
     PROJECT_NAME,
     PROJECT_ACTIVITY,
     PROJECT_BUILD_STATUS,
+    PROJECT_BUILD_LABEL,
     PROJECT_BUILD_TIME,
     PROJECT_URL);
 
@@ -139,17 +120,6 @@ begin
   fProjectList.Remove(tmpProject);
 end;
 
-procedure TProjectListTests.TestLoadFromFile;
-begin
-  //arrange
-
-  //act
-  fProjectList.loadFromFile(TrippleSlash_XML_URL);
-
-  //assert
-  CheckEquals(1, fProjectList.Count);
-end;
-
 procedure TProjectListTests.TestRemove;
 begin
   //arrange
@@ -157,6 +127,7 @@ begin
     PROJECT_NAME,
     PROJECT_ACTIVITY,
     PROJECT_BUILD_STATUS,
+    PROJECT_BUILD_LABEL,
     PROJECT_BUILD_TIME,
     PROJECT_URL);
 

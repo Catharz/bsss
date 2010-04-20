@@ -10,7 +10,9 @@ uses
   ProjectList in 'ProjectList.pas',
   ScreenSaverSetup in 'ScreenSaverSetup.pas' {frmScreenSaverSetup},
   ScreenSaverConfig in 'ScreenSaverConfig.pas',
-  ScreenSaverController in 'ScreenSaverController.pas' {dmScreenSaverController: TDataModule};
+  ScreenSaverController in 'ScreenSaverController.pas' {dmScreenSaverController: TDataModule},
+  FontManager in 'FontManager.pas',
+  BuildResultsFile in 'BuildResultsFile.pas';
 
 {$R *.res}
 
@@ -20,8 +22,7 @@ var
 begin
   Application.Initialize;
   Application.Title := 'Build Status Screen Saver';
-  Application.CreateForm(TdmScreenSaverController, dmScreenSaverController);
-
+  Application.CreateForm(TdmScreenSaverController, dmController);
   for iParam := 1 to ParamCount do
   begin
     if Copy(ParamStr(iParam), 0, 2) = '/c' then
@@ -30,10 +31,7 @@ begin
       while frmScreenSaverSetup.ShowModal = mrOk do
       begin
         try
-          dmScreenSaverController.Config.XmlFileURL := frmScreenSaverSetup.edtFileName.Text;
-          dmScreenSaverController.Config.AnimationFrequency := frmScreenSaverSetup.tbAnimationFrequency.Position;
-          dmScreenSaverController.Config.UpdateFrequency := frmScreenSaverSetup.tbUpdateFrequency.Position;
-          dmScreenSaverController.Config.SaveConfig;
+          dmController.Config.SaveConfig;
           Break;
         except
           on e: EInvalidUrl do
@@ -50,7 +48,7 @@ begin
     begin
       if Copy(ParamStr(iParam), 0, 2) = '/s' then
       begin
-        dmScreenSaverController.StartScreenSaver;
+        dmController.StartScreenSaver;
       end
       else
       begin

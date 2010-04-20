@@ -1,0 +1,92 @@
+unit BuildResultsFileTests;
+
+interface
+
+uses
+  Windows, SysUtils, Classes, TestFramework, TestExtensions,
+  ProjectList, ScreenSaverConfig, BuildResultsFile;
+
+type
+  TBuildResultsFileTests = class(TTestCase)
+  private
+    FProjectList : TProjectList;
+    FBuildResultsFile : TBuildResultsFile;
+    FConfig : TScreenSaverConfig;
+  protected
+    procedure SetUp; override;
+    procedure TearDown; override;
+
+  published
+    procedure TestLoadFromFile;
+    procedure TestTrippleSlashFileURLToPath;
+    procedure TestDoubleSlashFileURLToPath;
+  end;
+
+implementation
+
+{ TBuildResultsFileTests }
+
+const
+  TrippleSlash_XML_URL = 'file:///C:/dev/Projects/bsss/test.xml';
+  DoubleSlash_XML_URL  = 'file://C:/dev/Projects/bsss/test.xml';
+
+procedure TBuildResultsFileTests.SetUp;
+begin
+  inherited;
+  //TODO: Replace this with an interface and mock so we're not actually loading a file
+  FConfig := TScreenSaverConfig.Create;
+  FBuildResultsFile := TBuildResultsFile.Create(FConfig);
+  FProjectList := TProjectList.Create(FConfig);
+end;
+
+procedure TBuildResultsFileTests.TearDown;
+begin
+  FreeAndNil(FBuildResultsFile);
+  FreeAndNil(FProjectList);
+  FreeAndNil(FConfig);
+  inherited;
+end;
+
+procedure TBuildResultsFileTests.TestDoubleSlashFileURLToPath;
+var
+  sConvertedFileName, sFileName : String;
+begin
+  //arrange
+  sFileName := DoubleSlash_XML_URL;
+
+  //act
+  sConvertedFileName := fBuildResultsFile.FileUrlToPath(sFileName);
+
+  //assert
+  CheckEquals('C:\dev\Projects\bsss\test.xml', sConvertedFileName);
+end;
+
+procedure TBuildResultsFileTests.TestLoadFromFile;
+begin
+  //arrange
+
+  //act
+  fBuildResultsFile.Load(TrippleSlash_XML_URL, fProjectList);
+
+  //assert
+  CheckEquals(1, fProjectList.Count);
+end;
+
+procedure TBuildResultsFileTests.TestTrippleSlashFileURLToPath;
+var
+  sConvertedFileName, sFileName : String;
+begin
+  //arrange
+  sFileName := TrippleSlash_XML_URL;
+
+  //act
+  sConvertedFileName := FBuildResultsFile.FileURLToPath(sFileName);
+
+  //assert
+  CheckEquals('C:\dev\Projects\bsss\test.xml', sConvertedFileName);
+end;
+
+initialization
+  TestFramework.RegisterTest(TBuildResultsFileTests.Suite);
+
+end.

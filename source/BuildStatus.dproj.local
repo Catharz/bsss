@@ -7,5 +7,7 @@
     <Transaction>2010/04/06 17:53:10.974.pas,C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\ScreenList.pas=</Transaction>
     <Transaction>2010/04/07 07:38:23.257.dfm,C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\ScreenSaverController.dfm=C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\Unit1.dfm</Transaction>
     <Transaction>2010/04/07 07:38:23.257.pas,C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\ScreenSaverController.pas=C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\Unit1.pas</Transaction>
+    <Transaction>2010/04/15 07:56:34.605.pas,C:\dev\Projects\bsss\source\Unit1.pas=C:\dev\Projects\bsss\source\FontManager.pas</Transaction>
+    <Transaction>2010/04/20 18:22:20.775.pas,C:\dev\Projects\bsss\source\Unit1.pas=C:\dev\Projects\bsss\source\BuildResultsFile.pas</Transaction>
   </Transactions>
 </BorlandProject>

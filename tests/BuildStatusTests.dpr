@@ -13,7 +13,13 @@ uses
   ProjectTests in 'ProjectTests.pas',
   ProjectListTests in 'ProjectListTests.pas',
   ScreenSaverConfig in '..\source\ScreenSaverConfig.pas',
-  ScreenSaverConfigTests in 'ScreenSaverConfigTests.pas';
+  ScreenSaverConfigTests in 'ScreenSaverConfigTests.pas',
+  FontManager in '..\source\FontManager.pas',
+  ScreenSaverController in '..\source\ScreenSaverController.pas' {dmScreenSaverController: TDataModule},
+  ScreenSaverForm in '..\source\ScreenSaverForm.pas' {frmScreenSaver},
+  FontManagerTests in 'FontManagerTests.pas',
+  BuildResultsFile in '..\source\BuildResultsFile.pas',
+  BuildResultsFileTests in 'BuildResultsFileTests.pas';
 
 {$IFDEF DUNIT_CONSOLE_MODE}
   {$APPTYPE CONSOLE}

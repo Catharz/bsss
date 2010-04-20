@@ -29,6 +29,7 @@ const
   PROJECT_NAME         = 'SAMS';
   PROJECT_ACTIVITY     = 'Sleeping';
   PROJECT_BUILD_STATUS = 'Success';
+  PROJECT_BUILD_LABEL  = '0';
   PROJECT_BUILD_TIME   = '2010-03-24T12:30:52.4960000+10:00';
   PROJECT_URL          = 'http://asiscontint1.awmltd.com.au/FBServer6/BuildLog.aspx?ProjectName=SAMS 5.8.20 (Test Coverage)&amp;BuildID=Latest&amp;Filter=Auto&amp;Tab=Log';
 
@@ -39,6 +40,7 @@ begin
     PROJECT_NAME,
     PROJECT_ACTIVITY,
     PROJECT_BUILD_STATUS,
+    PROJECT_BUILD_LABEL,
     PROJECT_BUILD_TIME,
     PROJECT_URL);
 end;
@@ -63,8 +65,9 @@ begin
   try
     CheckEquals(PROJECT_NAME,         tmpProject.Name);
     CheckEquals(PROJECT_ACTIVITY,     tmpProject.Activity);
-    CheckEquals(PROJECT_BUILD_STATUS, tmpProject.LastBuildStatus);
-    CheckEquals(PROJECT_BUILD_TIME,   tmpProject.LastBuildTime);
+    CheckEquals(PROJECT_BUILD_STATUS, tmpProject.BuildStatus);
+    CheckEquals(PROJECT_BUILD_LABEL,  tmpProject.BuildLabel);
+    CheckEquals(PROJECT_BUILD_TIME,   tmpProject.BuildTime);
     CheckEquals(PROJECT_URL,          tmpProject.URL);
   finally
     FreeAndNil(tmpProject);
@@ -82,6 +85,7 @@ begin
     PROJECT_NAME,
     PROJECT_ACTIVITY,
     PROJECT_BUILD_STATUS,
+    PROJECT_BUILD_LABEL,
     PROJECT_BUILD_TIME,
     PROJECT_URL);
 
@@ -89,8 +93,9 @@ begin
   try
     CheckEquals(PROJECT_NAME,         tmpProject.Name);
     CheckEquals(PROJECT_ACTIVITY,     tmpProject.Activity);
-    CheckEquals(PROJECT_BUILD_STATUS, tmpProject.LastBuildStatus);
-    CheckEquals(PROJECT_BUILD_TIME,   tmpProject.LastBuildTime);
+    CheckEquals(PROJECT_BUILD_STATUS, tmpProject.BuildStatus);
+    CheckEquals(PROJECT_BUILD_LABEL,  tmpProject.BuildLabel);
+    CheckEquals(PROJECT_BUILD_TIME,   tmpProject.BuildTime);
     CheckEquals(PROJECT_URL,          tmpProject.URL);
   finally
     FreeAndNil(tmpProject);
@@ -108,6 +113,7 @@ begin
     PROJECT_NAME,
     PROJECT_ACTIVITY,
     PROJECT_BUILD_STATUS,
+    PROJECT_BUILD_LABEL,
     PROJECT_BUILD_TIME,
     PROJECT_URL);
 

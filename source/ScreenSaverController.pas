@@ -4,7 +4,7 @@ interface
 
 uses
   SysUtils, Classes, ExtCtrls, Forms, Contnrs,
-  ProjectList, ScreenSaverForm, ScreenSaverConfig;
+  ProjectList, ScreenSaverForm, ScreenSaverConfig, BuildResultsFile;
 
 type
   TdmScreenSaverController = class(TDataModule)
@@ -17,6 +17,7 @@ type
     FConfig : TScreenSaverConfig;
     fScreenList : TObjectList;
     fProjectList : TProjectList;
+    fBuildResultsFile : TBuildResultsFile;
     procedure ReadProjectStatus;
     procedure UpdateProjectLabels;
     procedure SetupScreen(form: TfrmScreenSaver; monitor: TMonitor; animationFrequency: Integer; projectList: TProjectList);
@@ -29,7 +30,7 @@ type
   end;
 
 var
-  dmScreenSaverController: TdmScreenSaverController;
+  dmController: TdmScreenSaverController;
 
 implementation
 
@@ -41,26 +42,28 @@ uses
 procedure TdmScreenSaverController.DataModuleCreate(Sender: TObject);
 begin
   inherited;
-  fProjectList := TProjectList.Create;
   fConfig := TScreenSaverConfig.Create;
   if not fConfig.LoadConfig then
   begin
     MessageDlg('Could not load registry settings for screen saver!', mtError, [mbOk], 0);
     Application.Terminate;
   end;
+  fProjectList := TProjectList.Create(fConfig);
+  fBuildResultsFile := TBuildResultsFile.Create(fConfig);
 end;
 
 procedure TdmScreenSaverController.DataModuleDestroy(Sender: TObject);
 begin
-  FreeAndNil(fConfig);
+  FreeAndNil(fBuildResultsFile);
   FreeAndNil(fProjectList);
+  FreeAndNil(fConfig);
   inherited;
 end;
 
 procedure TdmScreenSaverController.ReadProjectStatus;
 begin
   fProjectList.Clear;
-  fProjectList.loadFromFile(config.XmlFileURL);
+  fBuildResultsFile.Load(config.XmlFileURL, fProjectList);
 end;
 
 procedure TdmScreenSaverController.SetConfig(const Value: TScreenSaverConfig);

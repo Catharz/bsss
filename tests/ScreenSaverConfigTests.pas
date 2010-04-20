@@ -27,16 +27,33 @@ type
     procedure HttpUrlShouldBeValid;
     procedure UrlNotStartingWithHttpOrFileShouldBeInvalid;
 
+    procedure FontToStringShouldReturnCorrectString;
+    procedure StringToFontShouldReturnCorrectFont;
+
     procedure LoadConfigShouldNotRaiseAnException;
     procedure SaveConfigWithValidValuesShouldNotThrowException;
     procedure SaveConfigWithInvalidUrlShouldThrowException;
     procedure SaveConfigWithInvalidUpdateFrequencyShouldThrowException;
     procedure SaveConfigWithInvalidAnimationFrequencyShouldThrowException;
 
+    procedure SleepingShouldBeAStandardActivity;
+    procedure BuildingShouldBeAStandardActivity;
+    procedure CheckingModificationsShouldBeAStandardActivity;
+    procedure TestingShouldBeACustomActivity;
+
+    procedure ExceptionShouldBeAStandardStatus;
+    procedure SuccessShouldBeAStandardStatus;
+    procedure FailureShouldBeAStandardStatus;
+    procedure UnknownShouldBeAStandardStatus;
+    procedure UnitTestsFailedShouldBeACustomStatus;
+
     procedure SaveConfigShouldChangeRegistryValues;
   end;
 
 implementation
+
+uses
+  Graphics;
 
 procedure TScreenSaverConfigTests.SetUp;
 begin
@@ -53,6 +70,59 @@ begin
     backupConfig := nil;
 end;
 
+procedure TScreenSaverConfigTests.SleepingShouldBeAStandardActivity;
+var
+  sActivity : String;
+  ReturnValue : TValueType;
+begin
+  //arrange
+  sActivity := 'Sleeping';
+
+  //act
+  ReturnValue := FScreenSaverConfig.ActivityType(sActivity);
+
+  //assert
+  Check(vtStandard = ReturnValue);
+end;
+
+procedure TScreenSaverConfigTests.StringToFontShouldReturnCorrectFont;
+var
+  tmpFont : TFont;
+  sFont   : String;
+begin
+  //arrange
+  tmpFont := TFont.Create;
+  sFont := '"Ariel", 10, [Bold], [clRed]';
+
+  try
+    //act
+    FScreenSaverConfig.FontMgr.StringToFont(sFont, tmpFont);
+
+    //assert
+    CheckEquals(tmpFont.Name, 'Ariel');
+    CheckEquals(tmpFont.Size, 10);
+    Check(tmpFont.Style = [fsBold]);
+    CheckEquals(tmpFont.Color, clRed);
+  finally
+    FreeAndNil(tmpFont);
+  end;
+end;
+
+procedure TScreenSaverConfigTests.SuccessShouldBeAStandardStatus;
+var
+  sStatus : String;
+  ReturnValue : TValueType;
+begin
+  //arrange
+  sStatus := 'Success';
+
+  //act
+  ReturnValue := FScreenSaverConfig.StatusType(sStatus);
+
+  //assert
+  Check(vtStandard = ReturnValue);
+end;
+
 procedure TScreenSaverConfigTests.TearDown;
 begin
   if assigned(backupConfig) then
@@ -62,6 +132,21 @@ begin
   end;
   FreeAndNil(FScreenSaverConfig);
   inherited;
+end;
+
+procedure TScreenSaverConfigTests.TestingShouldBeACustomActivity;
+var
+  sActivity : String;
+  ReturnValue : TValueType;
+begin
+  //arrange
+  sActivity := 'Testing';
+
+  //act
+  ReturnValue := FScreenSaverConfig.ActivityType(sActivity);
+
+  //assert
+  Check(vtCustom = ReturnValue);
 end;
 
 procedure TScreenSaverConfigTests.TrippleSlashFileUrlShouldBeValid;
@@ -77,6 +162,36 @@ begin
 
   //assert
   CheckTrue(ReturnValue);
+end;
+
+procedure TScreenSaverConfigTests.UnitTestsFailedShouldBeACustomStatus;
+var
+  sStatus : String;
+  ReturnValue : TValueType;
+begin
+  //arrange
+  sStatus := 'UnitTestsFailed';
+
+  //act
+  ReturnValue := FScreenSaverConfig.StatusType(sStatus);
+
+  //assert
+  Check(vtCustom = ReturnValue);
+end;
+
+procedure TScreenSaverConfigTests.UnknownShouldBeAStandardStatus;
+var
+  sStatus : String;
+  ReturnValue : TValueType;
+begin
+  //arrange
+  sStatus := 'Unknown';
+
+  //act
+  ReturnValue := FScreenSaverConfig.StatusType(sStatus);
+
+  //assert
+  Check(vtStandard = ReturnValue);
 end;
 
 procedure TScreenSaverConfigTests.UpdateFrequencyGreaterThanTenShouldBeInvalid;
@@ -214,6 +329,36 @@ begin
   CheckTrue(ReturnValue);
 end;
 
+procedure TScreenSaverConfigTests.BuildingShouldBeAStandardActivity;
+var
+  sActivity : String;
+  ReturnValue : TValueType;
+begin
+  //arrange
+  sActivity := 'Building';
+
+  //act
+  ReturnValue := FScreenSaverConfig.ActivityType(sActivity);
+
+  //assert
+  Check(vtStandard = ReturnValue);
+end;
+
+procedure TScreenSaverConfigTests.CheckingModificationsShouldBeAStandardActivity;
+var
+  sActivity : String;
+  ReturnValue : TValueType;
+begin
+  //arrange
+  sActivity := 'CheckingModifications';
+
+  //act
+  ReturnValue := FScreenSaverConfig.ActivityType(sActivity);
+
+  //assert
+  Check(vtStandard = ReturnValue);
+end;
+
 procedure TScreenSaverConfigTests.DoubleSlashFileUrlShouldBeValid;
 var
   ReturnValue: Boolean;
@@ -227,6 +372,59 @@ begin
 
   //assert
   CheckTrue(ReturnValue);
+end;
+
+procedure TScreenSaverConfigTests.ExceptionShouldBeAStandardStatus;
+var
+  sStatus : String;
+  ReturnValue : TValueType;
+begin
+  //arrange
+  sStatus := 'Exception';
+
+  //act
+  ReturnValue := FScreenSaverConfig.StatusType(sStatus);
+
+  //assert
+  Check(vtStandard = ReturnValue);
+end;
+
+procedure TScreenSaverConfigTests.FailureShouldBeAStandardStatus;
+var
+  sStatus : String;
+  ReturnValue : TValueType;
+begin
+  //arrange
+  sStatus := 'Failure';
+
+  //act
+  ReturnValue := FScreenSaverConfig.StatusType(sStatus);
+
+  //assert
+  Check(vtStandard = ReturnValue);
+end;
+
+procedure TScreenSaverConfigTests.FontToStringShouldReturnCorrectString;
+var
+  tmpFont : TFont;
+  sFont   : String;
+begin
+  //arrange
+  tmpFont := TFont.Create;
+  tmpFont.Name := 'Ariel';
+  tmpFont.Size := 10;
+  tmpFont.Style := [fsBold];
+  tmpFont.Color := clRed;
+
+  try
+    //act
+    sFont := FScreenSaverConfig.FontMgr.FontToString(tmpFont);
+
+    //assert
+    CheckEquals(sFont, '"Ariel", 10, [Bold], [clRed]');
+  finally
+    FreeAndNil(tmpFont);
+  end;
 end;
 
 procedure TScreenSaverConfigTests.HttpUrlShouldBeValid;
