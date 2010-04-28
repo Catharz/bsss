@@ -1,16 +1,16 @@
-unit FontManagerTests;
+unit FontListTests;
 
 interface
 
 uses
-  Windows, SysUtils, TestFramework, TestExtensions, Classes, FontManager, Graphics;
+  Windows, SysUtils, TestFramework, TestExtensions, Classes, FontList, Graphics;
 
 type
   // Test methods for class TFontManager
 
-  TestTFontManager = class(TTestCase)
+  TFontListTests = class(TTestCase)
   strict private
-    FFontManager: TFontManager;
+    FFontList: TFontList;
   public
     procedure SetUp; override;
     procedure TearDown; override;
@@ -29,18 +29,18 @@ type
 
 implementation
 
-procedure TestTFontManager.SetUp;
+procedure TFontListTests.SetUp;
 begin
-  FFontManager := TFontManager.Create;
+  FFontList := TFontList.Create;
 end;
 
-procedure TestTFontManager.TearDown;
+procedure TFontListTests.TearDown;
 begin
-  FFontManager.Free;
-  FFontManager := nil;
+  FFontList.Free;
+  FFontList := nil;
 end;
 
-procedure TestTFontManager.ValidateFontShouldHandleErrorsGracefully;
+procedure TFontListTests.ValidateFontShouldHandleErrorsGracefully;
 var
   ReturnValue: Boolean;
   value: string;
@@ -49,13 +49,13 @@ begin
   value := '';
 
   //act
-  ReturnValue := FFontManager.ValidateFont(value);
+  ReturnValue := FFontList.ValidateFont(value);
 
   //assert
   CheckFalse(ReturnValue);
 end;
 
-procedure TestTFontManager.ValidateFontShouldReturnFalseWhenGivenInvalidFont;
+procedure TFontListTests.ValidateFontShouldReturnFalseWhenGivenInvalidFont;
 var
   ReturnValue : Boolean;
   value : string;
@@ -64,13 +64,13 @@ begin
   value := '"Ariel", 36, [Big], [clSky]';
 
   //act
-  ReturnValue := FFontManager.ValidateFont(value);
+  ReturnValue := FFontList.ValidateFont(value);
 
   //assert
   CheckFalse(ReturnValue);
 end;
 
-procedure TestTFontManager.ValidateFontSHouldReturnTrueWhenGivenValidFont;
+procedure TFontListTests.ValidateFontSHouldReturnTrueWhenGivenValidFont;
 var
   ReturnValue : Boolean;
   value : string;
@@ -79,13 +79,13 @@ begin
   value := '"Arial", 36, [Italic], [clRed]';
 
   //act
-  ReturnValue := FFontManager.ValidateFont(value);
+  ReturnValue := FFontList.ValidateFont(value);
 
   //assert
   CheckTrue(ReturnValue);
 end;
 
-procedure TestTFontManager.DefaultNonSleepingStyleShouldBeItalic;
+procedure TFontListTests.DefaultNonSleepingStyleShouldBeItalic;
 var
   ReturnValue, sActivity, sStatus : string;
   font : TFont;
@@ -97,8 +97,8 @@ begin
 
   try
     //act
-    ReturnValue := FFontManager.DefaultFontString[sActivity, sStatus];
-    FFontManager.StringToFont(ReturnValue, font);
+    ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+    FFontList.StringToFont(ReturnValue, font);
 
     //assert
     Check([fsItalic] = font.Style, 'Font style should be Italic');
@@ -107,7 +107,7 @@ begin
   end;
 end;
 
-procedure TestTFontManager.DefaultNonSuccessFontShouldBeRed;
+procedure TFontListTests.DefaultNonSuccessFontShouldBeRed;
 var
   ReturnValue, sActivity, sStatus : string;
   font : TFont;
@@ -119,8 +119,8 @@ begin
 
   try
     //act
-    ReturnValue := FFontManager.DefaultFontString[sActivity, sStatus];
-    FFontManager.StringToFont(ReturnValue, font);
+    ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+    FFontList.StringToFont(ReturnValue, font);
 
     //assert
     CheckEquals(clRed, font.Color, 'Font colour should be red');
@@ -129,7 +129,7 @@ begin
   end;
 end;
 
-procedure TestTFontManager.DefaultSleepingStyleShouldBeNormal;
+procedure TFontListTests.DefaultSleepingStyleShouldBeNormal;
 var
   ReturnValue, sActivity, sStatus : string;
   font : TFont;
@@ -142,8 +142,8 @@ begin
 
   try
     //act
-    ReturnValue := FFontManager.DefaultFontString[sActivity, sStatus];
-    FFontManager.StringToFont(ReturnValue, font);
+    ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+    FFontList.StringToFont(ReturnValue, font);
 
     //assert
     Check([] = font.Style, 'Font style should be Normal');
@@ -152,7 +152,7 @@ begin
   end;
 end;
 
-procedure TestTFontManager.DefaultSuccessFontShouldBeGreen;
+procedure TFontListTests.DefaultSuccessFontShouldBeGreen;
 var
   ReturnValue, sActivity, sStatus : string;
   font : TFont;
@@ -164,8 +164,8 @@ begin
 
   try
     //act
-    ReturnValue := FFontManager.DefaultFontString[sActivity, sStatus];
-    FFontManager.StringToFont(ReturnValue, font);
+    ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+    FFontList.StringToFont(ReturnValue, font);
 
     //assert
     CheckEquals(clGreen, font.Color, 'Font colour should be Green');
@@ -174,7 +174,7 @@ begin
   end;
 end;
 
-procedure TestTFontManager.FontToStringShouldHandleAllStyles;
+procedure TFontListTests.FontToStringShouldHandleAllStyles;
 var
   ReturnValue: string;
   font: TFont;
@@ -188,7 +188,7 @@ begin
 
   try
     //act
-    ReturnValue := FFontManager.FontToString(font);
+    ReturnValue := FFontList.FontToString(font);
 
     //assert
     CheckEquals('"Arial", 36, [Bold|Italic|Underline|Strikeout], [clRed]', ReturnValue);
@@ -197,7 +197,7 @@ begin
   end;
 end;
 
-procedure TestTFontManager.StringToFontShouldHandleAllStyles;
+procedure TFontListTests.StringToFontShouldHandleAllStyles;
 var
   font: TFont;
   value: string;
@@ -208,7 +208,7 @@ begin
 
   try
     //act
-    FFontManager.StringToFont(value, font);
+    FFontList.StringToFont(value, font);
 
     //assert
     CheckEquals('Arial', font.Name);
@@ -223,7 +223,7 @@ begin
   end;
 end;
 
-procedure TestTFontManager.StringToFontShouldHandleErrorsGracefully;
+procedure TFontListTests.StringToFontShouldHandleErrorsGracefully;
 var
   font: TFont;
   value: string;
@@ -237,7 +237,7 @@ begin
 
     //assert
     try
-      FFontManager.StringToFont(value, font);
+      FFontList.StringToFont(value, font);
       Check(False, 'EFontConversionError should have been raised!');
     except
       on e: EFontConversionError do
@@ -250,5 +250,5 @@ end;
 
 initialization
   // Register any test cases with the test runner
-  TestFramework.RegisterTest(TestTFontManager.Suite);
+  TestFramework.RegisterTest(TFontListTests.Suite);
 end.

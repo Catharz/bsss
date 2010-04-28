@@ -47,17 +47,21 @@
 			<DCCReference Include="ProjectListTests.pas"/>
 			<DCCReference Include="..\source\ScreenSaverConfig.pas"/>
 			<DCCReference Include="ScreenSaverConfigTests.pas"/>
-			<DCCReference Include="..\source\FontManager.pas"/>
+			<DCCReference Include="..\source\FontList.pas"/>
 			<DCCReference Include="..\source\ScreenSaverController.pas">
-				<Form>dmScreenSaverController</Form>
+				<Form>dmController</Form>
 				<DesignClass>TDataModule</DesignClass>
 			</DCCReference>
 			<DCCReference Include="..\source\ScreenSaverForm.pas">
 				<Form>frmScreenSaver</Form>
 			</DCCReference>
-			<DCCReference Include="FontManagerTests.pas"/>
+			<DCCReference Include="FontListTests.pas"/>
 			<DCCReference Include="..\source\BuildResultsFile.pas"/>
 			<DCCReference Include="BuildResultsFileTests.pas"/>
+			<DCCReference Include="..\source\I_SettingsRepository.pas"/>
+			<DCCReference Include="..\source\RegistryDAO.pas"/>
+			<DCCReference Include="..\source\ActivityStatusFont.pas"/>
+			<DCCReference Include="ActivityStatusFontTests.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -117,6 +121,9 @@
 						<Excluded_Packages Name="$(BDS)\bin\dcloffice2k150.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
 						<Excluded_Packages Name="$(BDS)\bin\dclofficexp150.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
 					</Excluded_Packages>
+					<Language>
+						<Language Name="RootDir">C:\dev\Projects\bsss\tests\</Language>
+					</Language>
 				</Delphi.Personality>
 				<Platforms>
 					<Platform value="Win32">True</Platform>

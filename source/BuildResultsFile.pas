@@ -10,9 +10,10 @@ type
     FTempFileName : String;
     FConfig : TScreenSaverConfig;
   private
-    function GetXMLFile(const xmlFileURL, localFileName: String): Boolean;
-    procedure CreateDummyFile(const localFileName: string);
+    procedure GetXMLFile(const xmlFileURL, localFileName: String);
+    procedure CreateDummyFile(const localFileName: string; const message: string);
     function Download(const localFileName: string; hURL: Pointer) : Boolean;
+    function DidFileExist(const localFileName: string) : Boolean;
   public
     constructor Create(config : TScreenSaverConfig); overload;
     procedure Load(sFileName: string; var projectList: TProjectList);
@@ -27,6 +28,7 @@ uses
   Classes,
   OmniXML,
   WinInet,
+  Windows,
   Types,
   Forms,
   Dialogs,
@@ -41,18 +43,18 @@ begin
   FTempFileName := GetEnvironmentVariable('TEMP') + '\projects.xml';
 end;
 
-procedure TBuildResultsFile.CreateDummyFile(const localFileName: string);
+procedure TBuildResultsFile.CreateDummyFile(const localFileName: string; const message: string);
 var
   sl: TStringList;
   sActivity, sStatus : String;
   iActivity, iStatus : Integer;
 begin
-  //if hURL was nil the URL was invalid.
-  //Write a dummy XML file showing this and demonstrate the possible values
+  //Write a dummy XML file showing the provided message and demonstrate the possible values
   sl := TStringList.Create;
+  sl.SaveToFile(localFileName);
   try
     sl.Add('<Projects>');
-    sl.Add('<Project activity="Sleeping" lastBuildStatus="Failure" lastBuildTime="2010-01-01T12:30:00.0000000+10:00" webUrl="http://loclahost/" name="Error: Cannot access XML URL!"/>');
+    sl.Add('<Project activity="Sleeping" lastBuildStatus="Failure" lastBuildTime="2010-01-01T12:30:00.0000000+10:00" webUrl="http://loclahost/" name="' + message + '"/>');
     for iActivity := 0 to FConfig.ActivityList.Count - 1 do
     begin
       for iStatus := 0 to FConfig.StatusList.Count - 1 do
@@ -97,14 +99,14 @@ begin
     finally
       CloseFile(f);
     end;
-    Result := True;
+    Result := DidFileExist(localFileName);
   finally
     InternetCloseHandle(hURL);
   end;
 end;
 
-function TBuildResultsFile.GetXMLFile(const xmlFileURL,
-  localFileName: String): Boolean;
+procedure TBuildResultsFile.GetXMLFile(const xmlFileURL,
+  localFileName: String);
 var
   hSession, hURL: HInternet;
   sAppName: string;
@@ -115,13 +117,11 @@ begin
     hURL := InternetOpenURL(hSession, PChar(xmlFileURL), nil, 0, 0, 0) ;
     if hURL <> nil then
     begin
-      Result := Download(localFileName, hURL);
+      if not Download(localFileName, hURL) then
+        CreateDummyFile(localFileName, 'ERROR: 404 File Not Found!');
     end
     else
-    begin
-      CreateDummyFile(localFileName);
-      Result := True;
-    end;
+      CreateDummyFile(localFileName, 'ERROR: No Network Connection!');
   finally
     InternetCloseHandle(hSession);
   end
@@ -136,13 +136,8 @@ begin
   else
     sTempFileName := sFileName;
 
-  if GetXMLFile(sFileName, FTempFileName) then
-    ParseXML(projectList)
-  else
-  begin
-    MessageDlg('Could not download ' + sFileName, mtError, [mbOk], 0);
-    Application.Terminate;
-  end;
+  GetXMLFile(sFileName, FTempFileName);
+  ParseXML(projectList);
 end;
 
 procedure TBuildResultsFile.ParseXML(var projectList: TProjectList);
@@ -177,6 +172,29 @@ begin
   finally
     FreeAndNil(stream);
   end;
+end;
+
+function TBuildResultsFile.DidFileExist(const localFileName: string) : Boolean;
+var
+  iPos: Integer;
+  sl: TStringList;
+  b404: Boolean;
+begin
+  //Check for a 404
+  sl := TStringList.Create;
+  b404 := False;
+  try
+    sl.LoadFromFile(localFileName);
+    for iPos := 0 to sl.Count - 1 do
+      if Pos('404 Not Found', sl[iPos]) > 0 then
+      begin
+        b404 := True;
+        Break;
+      end;
+  finally
+    FreeAndNil(sl);
+  end;
+  Result := (not b404);
 end;
 
 function TBuildResultsFile.FileUrlToPath(sFileName: string): String;

@@ -17,6 +17,7 @@ type
       Shift: TShiftState);
     procedure FormMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
     fMonitor : TMonitor;
@@ -44,7 +45,7 @@ implementation
 {$R *.dfm}
 
 uses
-  ScreenSaverController, FontManager;
+  ScreenSaverController, FontList;
 
 procedure TfrmScreenSaver.Animate;
 var
@@ -63,27 +64,25 @@ end;
 procedure TfrmScreenSaver.ConfigureLabel(var tmpLabel: TLabel; tmpProject: TProject);
 begin
   tmpLabel.Caption := tmpProject.Name;
-  tmpLabel.Font := dmController.Config.FontMgr.Font[tmpProject.Activity, tmpProject.BuildStatus];
+  tmpLabel.Font.Assign(dmController.Config.FontList.Font[tmpProject.Activity, tmpProject.BuildStatus]);
   tmpLabel.AutoSize := True;
   tmpLabel.Transparent := True;
   tmpLabel.Parent := Self;
 end;
 
 procedure TfrmScreenSaver.ClearLabels;
-var
-  tmpLabel: TLabel;
 begin
-  while labelList.Count > 0 do
-  begin
-    tmpLabel := TLabel(labelList.Items[0]);
-    labelList.Remove(tmpLabel);
-  end;
   labelList.Clear;
 end;
 
 procedure TfrmScreenSaver.tmrAnimateTimer(Sender: TObject);
 begin
   Animate;
+end;
+
+procedure TfrmScreenSaver.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Action := caFree;
 end;
 
 procedure TfrmScreenSaver.FormCreate(Sender: TObject);

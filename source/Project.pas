@@ -12,7 +12,7 @@ type
     FBuildTime : String;
     FURL : String;
   public
-    function Equals(proj : TProject) : boolean; reintroduce;
+    function Equals(proj : TProject) : boolean; reintroduce; overload;
     constructor Create; overload;
     constructor Create(aName, aActivity, aBuildStatus, aBuildLabel, aBuildTime, aURL : String); overload;
     procedure Assign(aProject : TProject);

@@ -4,16 +4,17 @@ interface
 
 uses
   SysUtils, Classes, ExtCtrls, Forms, Contnrs,
-  ProjectList, ScreenSaverForm, ScreenSaverConfig, BuildResultsFile;
+  ProjectList, ScreenSaverForm, ScreenSaverConfig, BuildResultsFile, RegistryDAO;
 
 type
-  TdmScreenSaverController = class(TDataModule)
+  TdmController = class(TDataModule)
     tmrUpdate: TTimer;
     procedure tmrUpdateTimer(Sender: TObject);
     procedure DataModuleCreate(Sender: TObject);
     procedure DataModuleDestroy(Sender: TObject);
   private
     { Private declarations }
+    FSettingsDAO : TRegistryDAO;
     FConfig : TScreenSaverConfig;
     fScreenList : TObjectList;
     fProjectList : TProjectList;
@@ -26,11 +27,11 @@ type
     { Public declarations }
     property Config : TScreenSaverConfig read fConfig write SetConfig;
     property ProjectList : TProjectList read fProjectList write fProjectList;
-    procedure StartScreenSaver;
+    procedure StartScreenSaver(var AScreenList : TObjectList);
   end;
 
 var
-  dmController: TdmScreenSaverController;
+  dmController: TdmController;
 
 implementation
 
@@ -39,10 +40,11 @@ implementation
 uses
   Dialogs;
 
-procedure TdmScreenSaverController.DataModuleCreate(Sender: TObject);
+procedure TdmController.DataModuleCreate(Sender: TObject);
 begin
   inherited;
-  fConfig := TScreenSaverConfig.Create;
+  FSettingsDAO := TRegistryDAO.Create;
+  fConfig := TScreenSaverConfig.Create(FSettingsDAO);
   if not fConfig.LoadConfig then
   begin
     MessageDlg('Could not load registry settings for screen saver!', mtError, [mbOk], 0);
@@ -52,36 +54,39 @@ begin
   fBuildResultsFile := TBuildResultsFile.Create(fConfig);
 end;
 
-procedure TdmScreenSaverController.DataModuleDestroy(Sender: TObject);
+procedure TdmController.DataModuleDestroy(Sender: TObject);
 begin
   FreeAndNil(fBuildResultsFile);
   FreeAndNil(fProjectList);
+  FSettingsDAO := nil;
   FreeAndNil(fConfig);
   inherited;
 end;
 
-procedure TdmScreenSaverController.ReadProjectStatus;
+procedure TdmController.ReadProjectStatus;
 begin
   fProjectList.Clear;
+  FreeAndNil(fProjectList);
+  fProjectList := TProjectList.Create(fConfig);
   fBuildResultsFile.Load(config.XmlFileURL, fProjectList);
 end;
 
-procedure TdmScreenSaverController.SetConfig(const Value: TScreenSaverConfig);
+procedure TdmController.SetConfig(const Value: TScreenSaverConfig);
 begin
   fConfig.Assign(Value);
   tmrUpdate.Interval := fConfig.UpdateFrequency * 60000; //Convert to minutes
 end;
 
-procedure TdmScreenSaverController.StartScreenSaver;
+procedure TdmController.StartScreenSaver(var AScreenList : TObjectList);
 var
   i : Integer;
   tempForm : TfrmScreenSaver;
 begin
   ReadProjectStatus;
-  fScreenList := TObjectList.Create;
 
   //Add the first (existing) screen to the list
   Application.CreateForm(TfrmScreenSaver, frmScreenSaver);
+  fScreenList := AScreenList;
   SetupScreen(frmScreenSaver, Screen.Monitors[0], fConfig.AnimationFrequency, fProjectList);
 
   //Setup subsequent screens
@@ -93,7 +98,7 @@ begin
   tmrUpdate.Enabled := True;
 end;
 
-procedure TdmScreenSaverController.SetupScreen(form: TfrmScreenSaver; monitor: TMonitor; animationFrequency: Integer; projectList: TProjectList);
+procedure TdmController.SetupScreen(form: TfrmScreenSaver; monitor: TMonitor; animationFrequency: Integer; projectList: TProjectList);
 begin
   fScreenList.Add(form);
   form.AnimationFrequency := animationFrequency;
@@ -103,14 +108,14 @@ begin
   form.Animate;
 end;
 
-procedure TdmScreenSaverController.tmrUpdateTimer(Sender: TObject);
+procedure TdmController.tmrUpdateTimer(Sender: TObject);
 begin
   tmrUpdate.Enabled := False;
   UpdateProjectLabels;
   tmrUpdate.Enabled := True;
 end;
 
-procedure TdmScreenSaverController.UpdateProjectLabels;
+procedure TdmController.UpdateProjectLabels;
 var
   i : Integer;
 begin

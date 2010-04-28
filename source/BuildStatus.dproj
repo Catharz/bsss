@@ -22,6 +22,7 @@
 			<Base>true</Base>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Base)'!=''">
+			<DCC_UsePackage>vclx;vcl;dbrtl;Rave76VCL;bdertl;rtl;vclactnband;xmlrtl;vcldb;vcldbx;dsnap;dsnapcon;TeeUI;TeeDB;Tee;adortl;vclib;ibxpress;IndyCore;IndySystem;IndyProtocols;inet;intrawebdb_100_120;Intraweb_100_120;VclSmp;vclie;websnap;webdsnap;inetdbbde;inetdbxpress;soaprtl;vclribbon;dbexpress;DbxCommonDriver;DataSnapIndy10ServerTransport;DataSnapProviderClient;DataSnapServer;DbxClientDriver;DBXSybaseASADriver;DBXInterBaseDriver;DBXMySQLDriver;dbxcds;DBXSybaseASEDriver;DBXOracleDriver;DBXMSSQLDriver;DBXInformixDriver;DBXDb2Driver;O407_r120;O407br120;Jcl;JclVcl;JvCoreD12R;JvSystemD12R;JvStdCtrlsD12R;JvAppFrmD12R;JvBandsD12R;JvDBD12R;JvDlgsD12R;JvBDED12R;JvCmpD12R;JvCryptD12R;JvCtrlsD12R;JvCustomD12R;JvDockingD12R;JvDotNetCtrlsD12R;JvEDID12R;JvGlobusD12R;JvHMID12R;JvInterpreterD12R;JvJansD12R;JvManagedThreadsD12R;JvMMD12R;JvNetD12R;JvPageCompsD12R;JvPluginD12R;JvPrintPreviewD12R;JvRuntimeDesignD12R;JvTimeFrameworkD12R;JvValidatorsD12R;JvWizardD12R;JvXPCtrlsD12R;madBasic_;madDisAsm_;madExcept_;iw10tmsd2009;iw10tmsgridd2009;iw10tmsgridded2009</DCC_UsePackage>
 			<DCC_DependencyCheckOutputName>BuildStatus.exe</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00400000</DCC_ImageBase>
 			<DCC_Platform>x86</DCC_Platform>
@@ -33,6 +34,12 @@
 			<DCC_DebugInformation>false</DCC_DebugInformation>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<BRCC_Defines>FastMM4;$(BRCC_Defines)</BRCC_Defines>
+			<DCC_Optimize>false</DCC_Optimize>
+			<DCC_RangeChecking>true</DCC_RangeChecking>
+			<DCC_MapFile>3</DCC_MapFile>
+			<DCC_IntegerOverflowCheck>true</DCC_IntegerOverflowCheck>
+			<DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
 			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
 		</PropertyGroup>
 		<ItemGroup>
@@ -49,11 +56,14 @@
 			</DCCReference>
 			<DCCReference Include="ScreenSaverConfig.pas"/>
 			<DCCReference Include="ScreenSaverController.pas">
-				<Form>dmScreenSaverController</Form>
+				<Form>dmController</Form>
 				<DesignClass>TDataModule</DesignClass>
 			</DCCReference>
-			<DCCReference Include="FontManager.pas"/>
+			<DCCReference Include="FontList.pas"/>
 			<DCCReference Include="BuildResultsFile.pas"/>
+			<DCCReference Include="I_SettingsRepository.pas"/>
+			<DCCReference Include="RegistryDAO.pas"/>
+			<DCCReference Include="ActivityStatusFont.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -87,7 +97,7 @@
 						<VersionInfo Name="MajorVer">1</VersionInfo>
 						<VersionInfo Name="MinorVer">0</VersionInfo>
 						<VersionInfo Name="Release">0</VersionInfo>
-						<VersionInfo Name="Build">5</VersionInfo>
+						<VersionInfo Name="Build">6</VersionInfo>
 						<VersionInfo Name="Debug">False</VersionInfo>
 						<VersionInfo Name="PreRelease">False</VersionInfo>
 						<VersionInfo Name="Special">False</VersionInfo>
@@ -99,7 +109,7 @@
 					<VersionInfoKeys>
 						<VersionInfoKeys Name="CompanyName">Craig Read</VersionInfoKeys>
 						<VersionInfoKeys Name="FileDescription">Build Status Screen Saver</VersionInfoKeys>
-						<VersionInfoKeys Name="FileVersion">1.0.0.5</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.0.0.6</VersionInfoKeys>
 						<VersionInfoKeys Name="InternalName">bsss</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalCopyright">Craig Read</VersionInfoKeys>
 						<VersionInfoKeys Name="LegalTrademarks">Craig Read</VersionInfoKeys>

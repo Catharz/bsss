@@ -4,11 +4,12 @@ interface
 
 uses
   Windows, SysUtils, Classes, TestFramework, TestExtensions,
-  ProjectList, ScreenSaverConfig, BuildResultsFile;
+  ProjectList, ScreenSaverConfig, BuildResultsFile, RegistryDAO;
 
 type
   TProjectListTests = class(TTestCase)
   private
+    FSettingsDAO : TRegistryDAO;
     FProjectList : TProjectList;
     FBuildResultsFile : TBuildResultsFile;
     FConfig : TScreenSaverConfig;
@@ -45,7 +46,8 @@ procedure TProjectListTests.Setup;
 begin
   inherited;
   //TODO: Replace this with an interface and mock so we're not actually loading a file
-  FConfig := TScreenSaverConfig.Create;
+  FSettingsDAO := TRegistryDAO.Create;
+  fConfig := TScreenSaverConfig.Create(FSettingsDAO);
   FBuildResultsFile := TBuildResultsFile.Create(FConfig);
   FProjectList := TProjectList.Create(FConfig);
 end;
@@ -54,6 +56,7 @@ procedure TProjectListTests.TearDown;
 begin
   FreeAndNil(FBuildResultsFile);
   FreeAndNil(FProjectList);
+  FSettingsDAO := nil;
   FreeAndNil(FConfig);
   inherited;
 end;

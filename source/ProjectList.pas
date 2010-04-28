@@ -45,8 +45,7 @@ end;
 
 procedure TProjectList.Clear;
 begin
-  while FObjectList.Count > 0 do
-    FObjectList.Remove(FObjectList.Items[0]);
+  FObjectList.Clear;
 end;
 
 constructor TProjectList.Create(config : TScreenSaverConfig);
@@ -58,7 +57,7 @@ end;
 
 destructor TProjectList.Destroy;
 begin
-  Clear;
+  FObjectList.Clear;
   FreeAndNil(FObjectList);
   inherited;
 end;

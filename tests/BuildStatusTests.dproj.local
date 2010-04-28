@@ -2,5 +2,7 @@
 <BorlandProject>
 	<Transactions>
     <Transaction>2010/04/20 18:47:04.138.pas,C:\dev\Projects\bsss\tests\Unit1.pas=C:\dev\Projects\bsss\tests\BuildResultsFileTests.pas</Transaction>
+    <Transaction>2010/04/23 15:28:14.511.pas,C:\dev\Projects\bsss\tests\FontManagerTests.pas=C:\dev\Projects\bsss\tests\FontListTests.pas</Transaction>
+    <Transaction>2010/04/28 06:42:01.787.pas,C:\dev\Projects\bsss\tests\Unit1.pas=C:\dev\Projects\bsss\tests\ActivityStatusFontTests.pas</Transaction>
   </Transactions>
 </BorlandProject>

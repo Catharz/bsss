@@ -1,4 +1,4 @@
-object dmScreenSaverController: TdmScreenSaverController
+object dmController: TdmController
   OldCreateOrder = False
   OnCreate = DataModuleCreate
   OnDestroy = DataModuleDestroy

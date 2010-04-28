@@ -3,6 +3,7 @@
 program BuildStatusTests;
 
 uses
+  FastMM4,
   SysUtils,
   TestFramework,
   TestExtensions,
@@ -14,12 +15,16 @@ uses
   ProjectListTests in 'ProjectListTests.pas',
   ScreenSaverConfig in '..\source\ScreenSaverConfig.pas',
   ScreenSaverConfigTests in 'ScreenSaverConfigTests.pas',
-  FontManager in '..\source\FontManager.pas',
-  ScreenSaverController in '..\source\ScreenSaverController.pas' {dmScreenSaverController: TDataModule},
+  FontList in '..\source\FontList.pas',
+  ScreenSaverController in '..\source\ScreenSaverController.pas' {dmController: TDataModule},
   ScreenSaverForm in '..\source\ScreenSaverForm.pas' {frmScreenSaver},
-  FontManagerTests in 'FontManagerTests.pas',
+  FontListTests in 'FontListTests.pas',
   BuildResultsFile in '..\source\BuildResultsFile.pas',
-  BuildResultsFileTests in 'BuildResultsFileTests.pas';
+  BuildResultsFileTests in 'BuildResultsFileTests.pas',
+  I_SettingsRepository in '..\source\I_SettingsRepository.pas',
+  RegistryDAO in '..\source\RegistryDAO.pas',
+  ActivityStatusFont in '..\source\ActivityStatusFont.pas',
+  ActivityStatusFontTests in 'ActivityStatusFontTests.pas';
 
 {$IFDEF DUNIT_CONSOLE_MODE}
   {$APPTYPE CONSOLE}

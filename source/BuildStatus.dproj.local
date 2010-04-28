@@ -9,5 +9,15 @@
     <Transaction>2010/04/07 07:38:23.257.pas,C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\ScreenSaverController.pas=C:\Users\craig\Documents\RAD Studio\Projects\bsss\source\Unit1.pas</Transaction>
     <Transaction>2010/04/15 07:56:34.605.pas,C:\dev\Projects\bsss\source\Unit1.pas=C:\dev\Projects\bsss\source\FontManager.pas</Transaction>
     <Transaction>2010/04/20 18:22:20.775.pas,C:\dev\Projects\bsss\source\Unit1.pas=C:\dev\Projects\bsss\source\BuildResultsFile.pas</Transaction>
+    <Transaction>2010/04/21 18:14:02.873.pas,C:\dev\Projects\bsss\source\Unit1.pas=C:\dev\Projects\bsss\source\SettingsRepositoryInterface.pas</Transaction>
+    <Transaction>2010/04/21 18:27:41.530.pas,C:\dev\Projects\bsss\source\Unit1.pas=C:\dev\Projects\bsss\source\RegistryRepository.pas</Transaction>
+    <Transaction>2010/04/21 18:38:16.593.pas,C:\dev\Projects\bsss\source\RegistryRepository.pas=C:\dev\Projects\bsss\source\RegistryDAO.pas</Transaction>
+    <Transaction>2010/04/23 13:16:13.706.pas,C:\dev\components\memcheck\MemCheck.pas=</Transaction>
+    <Transaction>2010/04/23 13:19:13.157.pas,C:\dev\components\memcheck\MemCheck.pas=</Transaction>
+    <Transaction>2010/04/23 15:01:39.766.pas,C:\dev\Projects\bsss\source\SettingsRepositoryInterface.pas=C:\dev\Projects\bsss\source\I_SettingsRepository.pas</Transaction>
+    <Transaction>2010/04/23 15:18:58.311.pas,C:\dev\Projects\bsss\source\FontManager.pas=C:\dev\Projects\bsss\source\FontList.pas</Transaction>
+    <Transaction>2010/04/23 15:22:50.882.pas,C:\dev\Projects\bsss\source\I_SettingsRepository.pas=C:\dev\Projects\bsss\source\SettingsRepositoryInterface.pas</Transaction>
+    <Transaction>2010/04/23 15:23:57.190.pas,C:\dev\Projects\bsss\source\SettingsRepositoryInterface.pas=C:\dev\Projects\bsss\source\I_SettingsRepository.pas</Transaction>
+    <Transaction>2010/04/27 07:41:28.657.pas,C:\dev\Projects\bsss\source\Unit1.pas=C:\dev\Projects\bsss\source\ActivityStatusFont.pas</Transaction>
   </Transactions>
 </BorlandProject>

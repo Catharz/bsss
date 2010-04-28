@@ -1,28 +1,36 @@
 program BuildStatus;
 
 uses
+  {$IFDEF FastMM4}
+  FastMM4,
+  {$ENDIF}
   Forms,
   Dialogs,
   Controls,
   SysUtils,
+  Contnrs,
   ScreenSaverForm in 'ScreenSaverForm.pas' {frmScreenSaver},
   Project in 'Project.pas',
   ProjectList in 'ProjectList.pas',
   ScreenSaverSetup in 'ScreenSaverSetup.pas' {frmScreenSaverSetup},
   ScreenSaverConfig in 'ScreenSaverConfig.pas',
-  ScreenSaverController in 'ScreenSaverController.pas' {dmScreenSaverController: TDataModule},
-  FontManager in 'FontManager.pas',
-  BuildResultsFile in 'BuildResultsFile.pas';
+  ScreenSaverController in 'ScreenSaverController.pas' {dmController: TDataModule},
+  FontList in 'FontList.pas',
+  BuildResultsFile in 'BuildResultsFile.pas',
+  I_SettingsRepository in 'I_SettingsRepository.pas',
+  RegistryDAO in 'RegistryDAO.pas',
+  ActivityStatusFont in 'ActivityStatusFont.pas';
 
 {$R *.res}
 
 var
   iParam : Integer;
+  fScreenList : TObjectList;
 
 begin
   Application.Initialize;
   Application.Title := 'Build Status Screen Saver';
-  Application.CreateForm(TdmScreenSaverController, dmController);
+  Application.CreateForm(TdmController, dmController);
   for iParam := 1 to ParamCount do
   begin
     if Copy(ParamStr(iParam), 0, 2) = '/c' then
@@ -48,7 +56,13 @@ begin
     begin
       if Copy(ParamStr(iParam), 0, 2) = '/s' then
       begin
-        dmController.StartScreenSaver;
+        try
+          fScreenList := TObjectList.Create(True);
+          dmController.StartScreenSaver(fScreenList);
+          Application.Run;
+        finally
+          FreeAndNil(fScreenList);
+        end;
       end
       else
       begin
@@ -60,5 +74,4 @@ begin
       end;
     end;
   end;
-  Application.Run;
 end.

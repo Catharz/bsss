@@ -3,12 +3,14 @@ unit ScreenSaverConfigTests;
 interface
 
 uses
-  Windows, SysUtils, Classes, TestFramework, TestExtensions, ScreenSaverConfig;
+  Windows, SysUtils, Classes, TestFramework, TestExtensions,
+  ScreenSaverConfig, RegistryDAO;
 
 type
   TScreenSaverConfigTests = class(TTestCase)
   private
     FScreenSaverConfig, backupConfig: TScreenSaverConfig;
+    FSettingsDAO : TRegistryDAO;
   public
     procedure SetUp; override;
     procedure TearDown; override;
@@ -58,12 +60,14 @@ uses
 procedure TScreenSaverConfigTests.SetUp;
 begin
   inherited;
-  FScreenSaverConfig := TScreenSaverConfig.Create;
+  //TODO: Replace with a mock
+  FSettingsDAO := TRegistryDAO.Create;
+  FScreenSaverConfig := TScreenSaverConfig.Create(FSettingsDAO);
   //I know it will slow these tests down
   //but I want do want to test the settings are actually saved
   if FScreenSaverConfig.LoadConfig then
   begin
-    backupConfig := TScreenSaverConfig.Create;
+    backupConfig := TScreenSaverConfig.Create(FSettingsDAO);
     backupConfig.Assign(FScreenSaverConfig);
   end
   else
@@ -96,7 +100,7 @@ begin
 
   try
     //act
-    FScreenSaverConfig.FontMgr.StringToFont(sFont, tmpFont);
+    FScreenSaverConfig.FontList.StringToFont(sFont, tmpFont);
 
     //assert
     CheckEquals(tmpFont.Name, 'Ariel');
@@ -130,6 +134,7 @@ begin
     backupConfig.SaveConfig;
     FreeAndNil(backupConfig);
   end;
+  FSettingsDAO := nil;
   FreeAndNil(FScreenSaverConfig);
   inherited;
 end;
@@ -418,7 +423,7 @@ begin
 
   try
     //act
-    sFont := FScreenSaverConfig.FontMgr.FontToString(tmpFont);
+    sFont := FScreenSaverConfig.FontList.FontToString(tmpFont);
 
     //assert
     CheckEquals(sFont, '"Ariel", 10, [Bold], [clRed]');

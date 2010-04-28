@@ -3,8 +3,8 @@ unit ScreenSaverConfig;
 interface
 
 uses
-  Registry, SysUtils, Classes,
-  Project, FontManager;
+  SysUtils, Classes,
+  Project, FontList, I_SettingsRepository;
 
 const
   DefaultXmlFileURL          = 'file://../test.xml';
@@ -18,21 +18,15 @@ type
 
   TValueType = (vtStandard, vtCustom);
 
-  //TODO: Split out the Registry code into a repository and interface
   TScreenSaverConfig = class
   private
     FAnimationFrequency : Integer;
     FUpdateFrequency : Integer;
     FXmlFileURL : String;
-    reg : TRegistry;
-    FFontManager : TFontManager;
+    FFontList : TFontList;
     FActivityList : TStringList;
     FStatusList : TStringList;
-    function OpenRegistryKey(path: string) : Boolean;
-    function ReadRegistryIntValue(path, key : String; default : Integer) : Integer;
-    function WriteRegistryIntValue(path, key : String; value : Integer) : Boolean;
-    function ReadRegistryStringValue(path, key, default : String) : String;
-    function WriteRegistryStringValue(path, key, value : String) : Boolean;
+    FSettings : ISettingsRepository;
     function GetCustomActivityList: String;
     function GetCustomStatusList: String;
     procedure LoadActivities;
@@ -48,13 +42,14 @@ type
     procedure SaveCustomActivities;
     procedure SaveCustomBuildStatuses;
   public
-    constructor Create;
-    destructor Destroy; reintroduce;
+    constructor Create(settingsDAO : ISettingsRepository);
+    destructor Destroy; override;
 
     function LoadConfig : Boolean;
     procedure SaveConfig;
     procedure Assign(config : TScreenSaverConfig);
 
+    //TODO: Create activity and status collection classes
     function ValidateActivity(value : String) : Boolean;
     function ActivityType(sActivity : string) : TValueType;
     procedure DeleteActivity(sActivity : string);
@@ -73,7 +68,7 @@ type
     property CustomStatusList : String read GetCustomStatusList;
     property ActivityList : TStringList read FActivityList write FActivityList;
     property StatusList : TStringList read FStatusList write FStatusList;
-    property FontMgr : TFontManager read FFontManager write FFontManager;
+    property FontList : TFontList read FFontList write FFontList;
     property AnimationFrequency : Integer read FAnimationFrequency write FAnimationFrequency;
     property UpdateFrequency : Integer read FUpdateFrequency write FUpdateFrequency;
     property XmlFileURL : String read FXmlFileURL write FXmlFileURL;
@@ -110,13 +105,13 @@ begin
   FAnimationFrequency := config.AnimationFrequency;
 end;
 
-constructor TScreenSaverConfig.Create;
+constructor TScreenSaverConfig.Create(settingsDAO : ISettingsRepository);
 begin
-  inherited;
-  reg := TRegistry.Create;
+  inherited Create;
+  FSettings := settingsDAO;
   FActivityList := TStringList.Create;
   FStatusList := TStringList.Create;
-  FFontManager := TFontManager.Create;
+  FFontList := TFontList.Create;
 end;
 
 procedure TScreenSaverConfig.DeleteActivity(sActivity: string);
@@ -139,10 +134,9 @@ end;
 
 destructor TScreenSaverConfig.Destroy;
 begin
-  FreeAndNil(FFontManager);
+  FreeAndNil(FFontList);
   FreeAndNil(FActivityList);
   FreeAndNil(FStatusList);
-  FreeAndNil(reg);
   inherited;
 end;
 
@@ -187,83 +181,24 @@ begin
   end;
 end;
 
-function TScreenSaverConfig.OpenRegistryKey(path: string): Boolean;
-begin
-  //If the key doesn't exist, then create it
-  if not reg.KeyExists(path) then
-  begin
-    if not reg.CreateKey(path) then
-    begin
-      Result := False;
-      Exit;
-    end;
-  end;
-
-  //Open the key
-  if not reg.OpenKey(path, False) then
-  begin
-    Result := False;
-    Exit;
-  end;
-  Result := True;
-end;
-
-function TScreenSaverConfig.ReadRegistryIntValue(path, key: String;
-  default: Integer): Integer;
-begin
-  if not OpenRegistryKey(path) then
-  begin
-    Result := 0;
-    Exit;
-  end;
-  if not reg.ValueExists(key) then
-    reg.WriteInteger(key, default);
-  Result := reg.ReadInteger(key);
-end;
-
-function TScreenSaverConfig.ReadRegistryStringValue(path, key,
-  default: String): String;
-begin
-  if not OpenRegistryKey(path) then
-  begin
-    Result := '';
-    Exit;
-  end;
-  if not reg.ValueExists(key) then
-    reg.WriteString(key, default);
-  Result := reg.ReadString(key);
-end;
-
 procedure TScreenSaverConfig.RenameActivity(sActivity, sNewActivity: string);
 var
-  iActivity, iStatus : Integer;
-  sOldFontKey, sNewFontKey : string;
+  iStatus : Integer;
 begin
   //replace the fonts
-  iActivity := FActivityList.IndexOf(sActivity);
   for iStatus := 0 to FStatusList.Count - 1 do
-  begin
-    sOldFontKey := FActivityList[iActivity] + '_' + FStatusList[iStatus];
-    sNewFontKey := sNewActivity + '_' + FStatusList[iStatus];
-    FFontManager.RenameFont(sOldFontKey, sNewFontKey);
-  end;
+    FFontList.RenameFont(sActivity, sNewActivity, FStatusList[iStatus], FStatusList[iStatus]);
   DeleteActivity(sActivity);
   FActivityList.Add(sNewActivity);
 end;
 
 procedure TScreenSaverConfig.RenameStatus(sStatus, sNewStatus: string);
 var
-  iActivity, iStatus : Integer;
-  sOldFontKey, sNewFontKey : string;
+  iActivity : Integer;
 begin
   //replace the fonts
-  iStatus := FStatusList.IndexOf(sStatus);
   for iActivity := 0 to FActivityList.Count - 1 do
-  begin
-    sOldFontKey := FActivityList[iActivity] + '_' + FStatusList[iStatus];
-    sNewFontKey := FActivityList[iActivity] + '_' + sNewStatus;
-    FFontManager.RenameFont(sOldFontKey, sNewFontKey);
-  end;
+    FFontList.RenameFont(FActivityList[iActivity], FActivityList[iActivity], sStatus, sNewStatus);
   DeleteStatus(sStatus);
   FStatusList.Add(sNewStatus);
 end;
@@ -322,33 +257,33 @@ end;
 
 procedure TScreenSaverConfig.SaveCustomBuildStatuses;
 begin
-  WriteRegistryStringValue(RegistryPath, 'CustomBuildStatuses', CustomStatusList);
+  FSettings.WriteStringValue(RegistryPath, 'CustomBuildStatuses', CustomStatusList);
 end;
 
 procedure TScreenSaverConfig.SaveCustomActivities;
 begin
-  WriteRegistryStringValue(RegistryPath, 'CustomActivities', CustomActivityList);
+  FSettings.WriteStringValue(RegistryPath, 'CustomActivities', CustomActivityList);
 end;
 
 procedure TScreenSaverConfig.SaveAnimationFrequency;
 begin
   if not ValidateAnimationFrequency(FAnimationFrequency) then
     raise EInvalidAnimationFrequency.Create(IntToStr(FAnimationFrequency) + ' is not a valid Animation Frequency!');
-  WriteRegistryIntValue(RegistryPath, 'AnimationFrequency', FAnimationFrequency);
+  FSettings.WriteIntegerValue(RegistryPath, 'AnimationFrequency', FAnimationFrequency);
 end;
 
 procedure TScreenSaverConfig.SaveUpdateFrequency;
 begin
   if not ValidateUpdateFrequency(FUpdateFrequency) then
     raise EInvalidUpdateFrequency.Create(IntToStr(FUpdateFrequency) + ' is not a valid Update Frequency!');
-  WriteRegistryIntValue(RegistryPath, 'UpdateFrequency', FUpdateFrequency);
+  FSettings.WriteIntegerValue(RegistryPath, 'UpdateFrequency', FUpdateFrequency);
 end;
 
 procedure TScreenSaverConfig.SaveXmlFileUrl;
 begin
   if not ValidateXmlFileUrl(FXmlFileUrl) then
     raise EInvalidUrl.Create(FXmlFileUrl + ' is not a valid Url!');
-  WriteRegistryStringValue(RegistryPath, 'XMLSource', FXmlFileUrl);
+  FSettings.WriteStringValue(RegistryPath, 'XMLSource', FXmlFileUrl);
 end;
 
 procedure TScreenSaverConfig.SaveFonts;
@@ -364,39 +299,39 @@ begin
     for iStatus := 0 to FStatusList.Count - 1 do
     begin
       sFontKey := FActivityList[iActivity] + '_' + FStatusList[iStatus];
-      sFont := FFontManager.FontAsString[FActivityList[iActivity], FStatusList[iStatus]];
-      WriteRegistryStringValue(RegistryPath + '\Fonts', sFontKey, sFont);
+      sFont := FFontList.FontAsString[FActivityList[iActivity], FStatusList[iStatus]];
+      FSettings.WriteStringValue(RegistryPath + '\Fonts', sFontKey, sFont);
     end;
   end;
 end;
 
 procedure TScreenSaverConfig.LoadAnimationFrequency;
 begin
-  FAnimationFrequency := ReadRegistryIntValue(RegistryPath, 'AnimationFrequency', DefaultAnimationFrequency);
+  FSettings.ReadIntegerValue(RegistryPath, 'AnimationFrequency', FAnimationFrequency, DefaultAnimationFrequency);
   if not ValidateAnimationFrequency(FAnimationFrequency) then
   begin
     FAnimationFrequency := DefaultAnimationFrequency;
-    WriteRegistryIntValue(RegistryPath, 'AnimationFrequency', DefaultAnimationFrequency);
+    FSettings.WriteIntegerValue(RegistryPath, 'AnimationFrequency', DefaultAnimationFrequency);
   end;
 end;
 
 procedure TScreenSaverConfig.LoadUpdateFrequency;
 begin
-  FUpdateFrequency := ReadRegistryIntValue(RegistryPath, 'UpdateFrequency', DefaultUpdateFrequency);
+  FSettings.ReadIntegerValue(RegistryPath, 'UpdateFrequency', FUpdateFrequency, DefaultUpdateFrequency);
   if not ValidateUpdateFrequency(FUpdateFrequency) then
   begin
     FUpdateFrequency := DefaultUpdateFrequency;
-    WriteRegistryIntValue(RegistryPath, 'UpdateFrequency', DefaultUpdateFrequency);
+    FSettings.WriteIntegerValue(RegistryPath, 'UpdateFrequency', DefaultUpdateFrequency);
   end;
 end;
 
 procedure TScreenSaverConfig.LoadXmlFileUrl;
 begin
-  FXmlFileUrl := ReadRegistryStringValue(RegistryPath, 'XMLSource', DefaultXmlFileUrl);
+  FSettings.ReadStringValue(RegistryPath, 'XMLSource', FXmlFileUrl, DefaultXmlFileUrl);
   if not ValidateXmlFileUrl(FXmlFileUrl) then
   begin
     FXmlFileUrl := DefaultXmlFileUrl;
-    WriteRegistryStringValue(RegistryPath, 'XMLSource', DefaultXmlFileUrl);
+    FSettings.WriteStringValue(RegistryPath, 'XMLSource', DefaultXmlFileUrl);
   end;
 end;
 
@@ -414,9 +349,9 @@ begin
     for iStatus := 0 to FStatusList.Count - 1 do
     begin
       sFontKey := FActivityList[iActivity] + '_' + FStatusList[iStatus];
-      sDefaultFont := FFontManager.DefaultFontString[FActivityList[iActivity], FStatusList[iStatus]];
-      sFont := ReadRegistryStringValue(RegistryPath + '\Fonts', sFontKey, sDefaultFont);
-      FFontManager.FontAsString[FActivityList[iActivity], FStatusList[iStatus]] := sFont;
+      sDefaultFont := FFontList.DefaultFontString[FActivityList[iActivity], FStatusList[iStatus]];
+      FSettings.ReadStringValue(RegistryPath + '\Fonts', sFontKey, sFont, sDefaultFont);
+      FFontList.FontAsString[FActivityList[iActivity], FStatusList[iStatus]] := sFont;
     end;
   end;
 end;
@@ -427,7 +362,7 @@ var
 begin
   //Load the list of statuses
   FStatusList.Clear;
-  sStatusList := ReadRegistryStringValue(RegistryPath, 'CustomBuildStatuses', '');
+  FSettings.ReadStringValue(RegistryPath, 'CustomBuildStatuses', sStatusList, '');
   if sStatusList = '' then
     FStatusList.CommaText := DefaultBuildStatuses
   else
@@ -440,35 +375,11 @@ var
 begin
   //Load the list of activities
   FActivityList.Clear;
-  sActivityList := ReadRegistryStringValue(RegistryPath, 'CustomActivities', '');
+  FSettings.ReadStringValue(RegistryPath, 'CustomActivities', sActivityList, '');
   if sActivityList = '' then
     FActivityList.CommaText := DefaultActivities
   else
     FActivityList.CommaText := DefaultActivities + ',' + sActivityList;
-end;
-
-function TScreenSaverConfig.WriteRegistryIntValue(path, key: String;
-  value: Integer): Boolean;
-begin
-  if not OpenRegistryKey(path) then
-  begin
-    Result := False;
-    Exit;
-  end;
-  reg.WriteInteger(key, value);
-  Result := True;
-end;
-
-function TScreenSaverConfig.WriteRegistryStringValue(path, key,
-  value: String): Boolean;
-begin
-  if not OpenRegistryKey(path) then
-  begin
-    Result := False;
-    Exit;
-  end;
-  reg.WriteString(key, value);
-  Result := True;
 end;
 
 end.

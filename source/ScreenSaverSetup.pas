@@ -74,7 +74,7 @@ begin
   sStatus := lbStatus.Items[lbStatus.ItemIndex];
 
   //Display the correct font
-  lblFontExample.Font := FConfig.FontMgr.Font[sActivity, sStatus];
+  lblFontExample.Font := FConfig.FontList.Font[sActivity, sStatus];
   lblFontExample.Caption := sActivity + ' ' + sStatus;
 
   //Set the edit field value
@@ -240,13 +240,13 @@ var
 begin
   if (Sender is TLabel) then
   begin
-    fd.Font := (Sender as TLabel).Font;
+    fd.Font.Assign((Sender as TLabel).Font);
     if fd.Execute then
     begin
-      (Sender as TLabel).Font := fd.Font;
       sActivity := lbActivity.Items[lbActivity.ItemIndex];
       sStatus := lbStatus.Items[lbStatus.ItemIndex];
-      FConfig.FontMgr.Font[sActivity, sStatus] := fd.Font;
+      FConfig.FontList.Font[sActivity, sStatus].Assign(fd.Font);
+      lblFontExample.Font.Assign(fd.Font);
     end;
   end;
 end;
