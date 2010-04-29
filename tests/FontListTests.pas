@@ -15,12 +15,23 @@ type
     procedure SetUp; override;
     procedure TearDown; override;
   published
-    procedure ValidateFontShouldHandleErrorsGracefully;
-    procedure ValidateFontShouldReturnFalseWhenGivenInvalidFont;
-    procedure ValidateFontSHouldReturnTrueWhenGivenValidFont;
-    procedure FontToStringShouldHandleAllStyles;
-    procedure StringToFontShouldHandleErrorsGracefully;
-    procedure StringToFontShouldHandleAllStyles;
+    procedure DefaultBuildingExceptionFontShouldBeRedItalic;
+    procedure DefaultBuildingFailureFontShouldBeRedItalic;
+    procedure DefaultBuildingSuccessFontShouldBeGreenItalic;
+    procedure DefaultBuildingUnknownFontShouldBeRedItalic;
+
+    procedure DefaultCheckingModificationsExceptionFontShouldBeRedItalic;
+    procedure DefaultCheckingModificationsFailureFontShouldBeRedItalic;
+    procedure DefaultCheckingModificationsSuccessFontShouldBeGreenItalic;
+    procedure DefaultCheckingModificationsUnknownFontShouldBeRedItalic;
+
+    procedure DefaultSleepingExceptionFontShouldBeRedNormal;
+    procedure DefaultSleepingFailureFontShouldBeRedNormal;
+    procedure DefaultSleepingSuccessFontShouldBeGreenNormal;
+    procedure DefaultSleepingUnknownFontShouldBeRedNormal;
+
+    procedure DefaultFontNameShouldBeArial;
+
     procedure DefaultSuccessFontShouldBeGreen;
     procedure DefaultNonSuccessFontShouldBeRed;
     procedure DefaultSleepingStyleShouldBeNormal;
@@ -40,49 +51,174 @@ begin
   FFontList := nil;
 end;
 
-procedure TFontListTests.ValidateFontShouldHandleErrorsGracefully;
+procedure TFontListTests.DefaultBuildingExceptionFontShouldBeRedItalic;
 var
-  ReturnValue: Boolean;
-  value: string;
+  ReturnValue, sActivity, sStatus : string;
+  font : TFont;
 begin
   //arrange
-  value := '';
+  sActivity := 'Building';
+  sStatus := 'Exception';
 
   //act
-  ReturnValue := FFontList.ValidateFont(value);
+  ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+  FFontList.FontAsString[sActivity, sStatus] := ReturnValue;
+  font := FFontList.Font[sActivity, sStatus];
 
   //assert
-  CheckFalse(ReturnValue);
+  CheckEquals(clRed, font.Color, sActivity + ' ' + sStatus + ' Font colour should be Red');
+  Check([fsItalic] = font.Style, sActivity + ' ' + sStatus + ' Font style should be Italic');
 end;
 
-procedure TFontListTests.ValidateFontShouldReturnFalseWhenGivenInvalidFont;
+procedure TFontListTests.DefaultBuildingFailureFontShouldBeRedItalic;
 var
-  ReturnValue : Boolean;
-  value : string;
-begin
-  //act
-  value := '"Ariel", 36, [Big], [clSky]';
-
-  //act
-  ReturnValue := FFontList.ValidateFont(value);
-
-  //assert
-  CheckFalse(ReturnValue);
-end;
-
-procedure TFontListTests.ValidateFontSHouldReturnTrueWhenGivenValidFont;
-var
-  ReturnValue : Boolean;
-  value : string;
+  ReturnValue, sActivity, sStatus : string;
+  font : TFont;
 begin
   //arrange
-  value := '"Arial", 36, [Italic], [clRed]';
+  sActivity := 'Building';
+  sStatus := 'Failure';
 
   //act
-  ReturnValue := FFontList.ValidateFont(value);
+  ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+  FFontList.FontAsString[sActivity, sStatus] := ReturnValue;
+  font := FFontList.Font[sActivity, sStatus];
 
   //assert
-  CheckTrue(ReturnValue);
+  CheckEquals(clRed, font.Color, sActivity + ' ' + sStatus + ' Font colour should be Red');
+  Check([fsItalic] = font.Style, sActivity + ' ' + sStatus + ' Font style should be Italic');
+end;
+
+procedure TFontListTests.DefaultBuildingSuccessFontShouldBeGreenItalic;
+var
+  ReturnValue, sActivity, sStatus : string;
+  font : TFont;
+begin
+  //arrange
+  sActivity := 'Building';
+  sStatus := 'Success';
+
+  //act
+  ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+  FFontList.FontAsString[sActivity, sStatus] := ReturnValue;
+  font := FFontList.Font[sActivity, sStatus];
+
+  //assert
+  CheckEquals(clGreen, font.Color, sActivity + ' ' + sStatus + ' Font colour should be Green');
+  Check([fsItalic] = font.Style, sActivity + ' ' + sStatus + ' Font style should be Italic');
+end;
+
+procedure TFontListTests.DefaultBuildingUnknownFontShouldBeRedItalic;
+var
+  ReturnValue, sActivity, sStatus : string;
+  font : TFont;
+begin
+  //arrange
+  sActivity := 'Building';
+  sStatus := 'Unknown';
+
+  //act
+  ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+  FFontList.FontAsString[sActivity, sStatus] := ReturnValue;
+  font := FFontList.Font[sActivity, sStatus];
+
+  //assert
+  CheckEquals(clRed, font.Color, sActivity + ' ' + sStatus + ' Font colour should be Red');
+  Check([fsItalic] = font.Style, sActivity + ' ' + sStatus + ' Font style should be Italic');
+end;
+
+procedure TFontListTests.DefaultCheckingModificationsExceptionFontShouldBeRedItalic;
+var
+  ReturnValue, sActivity, sStatus : string;
+  font : TFont;
+begin
+  //arrange
+  sActivity := 'CheckingModifications';
+  sStatus := 'Exception';
+
+  //act
+  ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+  FFontList.FontAsString[sActivity, sStatus] := ReturnValue;
+  font := FFontList.Font[sActivity, sStatus];
+
+  //assert
+  CheckEquals(clRed, font.Color, sActivity + ' ' + sStatus + ' Font colour should be Red');
+  Check([fsItalic] = font.Style, sActivity + ' ' + sStatus + ' Font style should be Italic');
+end;
+
+procedure TFontListTests.DefaultCheckingModificationsFailureFontShouldBeRedItalic;
+var
+  ReturnValue, sActivity, sStatus : string;
+  font : TFont;
+begin
+  //arrange
+  sActivity := 'ChecingModifications';
+  sStatus := 'Failure';
+
+  //act
+  ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+  FFontList.FontAsString[sActivity, sStatus] := ReturnValue;
+  font := FFontList.Font[sActivity, sStatus];
+
+  //assert
+  CheckEquals(clRed, font.Color, sActivity + ' ' + sStatus + ' Font colour should be Red');
+  Check([fsItalic] = font.Style, sActivity + ' ' + sStatus + ' Font style should be Italic');
+end;
+
+procedure TFontListTests.DefaultCheckingModificationsSuccessFontShouldBeGreenItalic;
+var
+  ReturnValue, sActivity, sStatus : string;
+  font : TFont;
+begin
+  //arrange
+  sActivity := 'CheckingModifications';
+  sStatus := 'Success';
+
+  //act
+  ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+  FFontList.FontAsString[sActivity, sStatus] := ReturnValue;
+  font := FFontList.Font[sActivity, sStatus];
+
+  //assert
+  CheckEquals(clGreen, font.Color, sActivity + ' ' + sStatus + ' Font colour should be Green');
+  Check([fsItalic] = font.Style, sActivity + ' ' + sStatus + ' Font style should be Italic');
+end;
+
+procedure TFontListTests.DefaultCheckingModificationsUnknownFontShouldBeRedItalic;
+var
+  ReturnValue, sActivity, sStatus : string;
+  font : TFont;
+begin
+  //arrange
+  sActivity := 'CheckingModifications';
+  sStatus := 'Unknown';
+
+  //act
+  ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+  FFontList.FontAsString[sActivity, sStatus] := ReturnValue;
+  font := FFontList.Font[sActivity, sStatus];
+
+  //assert
+  CheckEquals(clRed, font.Color, sActivity + ' ' + sStatus + ' Font colour should be Red');
+  Check([fsItalic] = font.Style, sActivity + ' ' + sStatus + ' Font style should be Italic');
+end;
+
+procedure TFontListTests.DefaultFontNameShouldBeArial;
+var
+  ReturnValue, sActivity, sStatus : string;
+  font : TFont;
+begin
+  //arrange
+  sActivity := 'Whatever';
+  sStatus := 'Whatever';
+
+  //act
+  ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+  FFontList.FontAsString[sActivity, sStatus] := ReturnValue;
+  font := FFontList.Font[sActivity, sStatus];
+
+  //assert
+  CheckEquals('Arial', font.Name, 'Font name should be Arial');
 end;
 
 procedure TFontListTests.DefaultNonSleepingStyleShouldBeItalic;
@@ -93,18 +229,14 @@ begin
   //arrange
   sActivity := 'Whatever';
   sStatus := 'Whatever';
-  font := TFont.Create;
 
-  try
-    //act
-    ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
-    FFontList.StringToFont(ReturnValue, font);
+  //act
+  ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+  FFontList.FontAsString[sActivity, sStatus] := ReturnValue;
+  font := FFontList.Font[sActivity, sStatus];
 
-    //assert
-    Check([fsItalic] = font.Style, 'Font style should be Italic');
-  finally
-    FreeAndNil(font);
-  end;
+  //assert
+  Check([fsItalic] = font.Style, 'Font style should be Italic');
 end;
 
 procedure TFontListTests.DefaultNonSuccessFontShouldBeRed;
@@ -115,18 +247,52 @@ begin
   //arrange
   sActivity := 'Whatever';
   sStatus := 'Whatever';
-  font := TFont.Create;
 
-  try
-    //act
-    ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
-    FFontList.StringToFont(ReturnValue, font);
+  //act
+  ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+  FFontList.FontAsString[sActivity, sStatus] := ReturnValue;
+  font := FFontList.Font[sActivity, sStatus];
 
-    //assert
-    CheckEquals(clRed, font.Color, 'Font colour should be red');
-  finally
-    FreeAndNil(font);
-  end;
+  //assert
+  CheckEquals(clRed, font.Color, 'Font colour should be red');
+end;
+
+procedure TFontListTests.DefaultSleepingExceptionFontShouldBeRedNormal;
+var
+  ReturnValue, sActivity, sStatus : string;
+  font : TFont;
+begin
+  //arrange
+  sActivity := 'Sleeping';
+  sStatus := 'Exception';
+
+  //act
+  ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+  FFontList.FontAsString[sActivity, sStatus] := ReturnValue;
+  font := FFontList.Font[sActivity, sStatus];
+
+  //assert
+  CheckEquals(clRed, font.Color, sActivity + ' ' + sStatus + ' Font colour should be Red');
+  Check([] = font.Style, sActivity + ' ' + sStatus + ' Font style should be Normal');
+end;
+
+procedure TFontListTests.DefaultSleepingFailureFontShouldBeRedNormal;
+var
+  ReturnValue, sActivity, sStatus : string;
+  font : TFont;
+begin
+  //arrange
+  sActivity := 'Sleeping';
+  sStatus := 'Failure';
+
+  //act
+  ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+  FFontList.FontAsString[sActivity, sStatus] := ReturnValue;
+  font := FFontList.Font[sActivity, sStatus];
+
+  //assert
+  CheckEquals(clRed, font.Color, sActivity + ' ' + sStatus + ' Font colour should be Red');
+  Check([] = font.Style, sActivity + ' ' + sStatus + ' Font style should be Normal');
 end;
 
 procedure TFontListTests.DefaultSleepingStyleShouldBeNormal;
@@ -137,19 +303,52 @@ begin
   //arrange
   sActivity := 'Sleeping';
   sStatus := 'Whatever';
-  font := TFont.Create;
-  font.style := [fsBold];
 
-  try
-    //act
-    ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
-    FFontList.StringToFont(ReturnValue, font);
+  //act
+  ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+  FFontList.FontAsString[sActivity, sStatus] := ReturnValue;
+  font := FFontList.Font[sActivity, sStatus];
 
-    //assert
-    Check([] = font.Style, 'Font style should be Normal');
-  finally
-    FreeAndNil(font);
-  end;
+  //assert
+  Check([] = font.Style, 'Font style should be Normal');
+end;
+
+procedure TFontListTests.DefaultSleepingSuccessFontShouldBeGreenNormal;
+var
+  ReturnValue, sActivity, sStatus : string;
+  font : TFont;
+begin
+  //arrange
+  sActivity := 'Sleeping';
+  sStatus := 'Success';
+
+  //act
+  ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+  FFontList.FontAsString[sActivity, sStatus] := ReturnValue;
+  font := FFontList.Font[sActivity, sStatus];
+
+  //assert
+  CheckEquals(clGreen, font.Color, sActivity + ' ' + sStatus + ' Font colour should be Green');
+  Check([] = font.Style, sActivity + ' ' + sStatus + ' Font style should be Normal');
+end;
+
+procedure TFontListTests.DefaultSleepingUnknownFontShouldBeRedNormal;
+var
+  ReturnValue, sActivity, sStatus : string;
+  font : TFont;
+begin
+  //arrange
+  sActivity := 'Sleeping';
+  sStatus := 'Unknown';
+
+  //act
+  ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+  FFontList.FontAsString[sActivity, sStatus] := ReturnValue;
+  font := FFontList.Font[sActivity, sStatus];
+
+  //assert
+  CheckEquals(clRed, font.Color, sActivity + ' ' + sStatus + ' Font colour should be Red');
+  Check([] = font.Style, sActivity + ' ' + sStatus + ' Font style should be Normal');
 end;
 
 procedure TFontListTests.DefaultSuccessFontShouldBeGreen;
@@ -160,92 +359,14 @@ begin
   //arrange
   sActivity := 'Whatever';
   sStatus := 'Success';
-  font := TFont.Create;
 
-  try
-    //act
-    ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
-    FFontList.StringToFont(ReturnValue, font);
+  //act
+  ReturnValue := FFontList.DefaultFontString[sActivity, sStatus];
+  FFontList.FontAsString[sActivity, sStatus] := ReturnValue;
+  font := FFontList.Font[sActivity, sStatus];
 
-    //assert
-    CheckEquals(clGreen, font.Color, 'Font colour should be Green');
-  finally
-    FreeAndNil(font);
-  end;
-end;
-
-procedure TFontListTests.FontToStringShouldHandleAllStyles;
-var
-  ReturnValue: string;
-  font: TFont;
-begin
-  //arrange
-  font := TFont.Create;
-  font.Name := 'Arial';
-  font.Size := 36;
-  font.Style := [fsBold, fsItalic, fsUnderline, fsStrikeOut];
-  font.Color := clRed;
-
-  try
-    //act
-    ReturnValue := FFontList.FontToString(font);
-
-    //assert
-    CheckEquals('"Arial", 36, [Bold|Italic|Underline|Strikeout], [clRed]', ReturnValue);
-  finally
-    FreeAndNil(font);
-  end;
-end;
-
-procedure TFontListTests.StringToFontShouldHandleAllStyles;
-var
-  font: TFont;
-  value: string;
-begin
-  //arrange
-  font := TFont.Create;
-  value := '"Arial", 36, [Bold|Italic|Underline|Strikeout], [clRed]';
-
-  try
-    //act
-    FFontList.StringToFont(value, font);
-
-    //assert
-    CheckEquals('Arial', font.Name);
-    CheckEquals(36, font.Size);
-    CheckTrue(fsBold in font.Style);
-    CheckTrue(fsItalic in font.Style);
-    CheckTrue(fsUnderline in font.Style);
-    CheckTrue(fsStrikeOut in font.Style);
-    CheckEquals(clRed, font.Color);
-  finally
-    FreeAndNil(font);
-  end;
-end;
-
-procedure TFontListTests.StringToFontShouldHandleErrorsGracefully;
-var
-  font: TFont;
-  value: string;
-begin
-  //arrange
-  font := TFont.Create;
-  value := '"Ariel", 36, [Big|Fancy|Highlighted|Struckeout], [clSky]';
-
-  try
-    //act
-
-    //assert
-    try
-      FFontList.StringToFont(value, font);
-      Check(False, 'EFontConversionError should have been raised!');
-    except
-      on e: EFontConversionError do
-        Check(True, 'EFontConversionError raised correctly!');
-    end;
-  finally
-    FreeAndNil(font);
-  end;
+  //assert
+  CheckEquals(clGreen, font.Color, 'Font colour should be Green');
 end;
 
 initialization

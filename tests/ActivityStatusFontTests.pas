@@ -14,6 +14,7 @@ type
     procedure SetUp; override;
     procedure TearDown; override;
   published
+
     procedure IsEqualToShouldReturnFalseWhenActivityChanged;
     procedure IsEqualToShouldReturnFalseWhenStatusChanged;
     procedure IsEqualToShouldReturnFalseWhenFontColorChanged;

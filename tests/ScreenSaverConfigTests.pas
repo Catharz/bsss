@@ -29,9 +29,6 @@ type
     procedure HttpUrlShouldBeValid;
     procedure UrlNotStartingWithHttpOrFileShouldBeInvalid;
 
-    procedure FontToStringShouldReturnCorrectString;
-    procedure StringToFontShouldReturnCorrectFont;
-
     procedure LoadConfigShouldNotRaiseAnException;
     procedure SaveConfigWithValidValuesShouldNotThrowException;
     procedure SaveConfigWithInvalidUrlShouldThrowException;
@@ -63,15 +60,7 @@ begin
   //TODO: Replace with a mock
   FSettingsDAO := TRegistryDAO.Create;
   FScreenSaverConfig := TScreenSaverConfig.Create(FSettingsDAO);
-  //I know it will slow these tests down
-  //but I want do want to test the settings are actually saved
-  if FScreenSaverConfig.LoadConfig then
-  begin
-    backupConfig := TScreenSaverConfig.Create(FSettingsDAO);
-    backupConfig.Assign(FScreenSaverConfig);
-  end
-  else
-    backupConfig := nil;
+  backupConfig := TScreenSaverConfig.Create(FSettingsDAO);
 end;
 
 procedure TScreenSaverConfigTests.SleepingShouldBeAStandardActivity;
@@ -87,29 +76,6 @@ begin
 
   //assert
   Check(vtStandard = ReturnValue);
-end;
-
-procedure TScreenSaverConfigTests.StringToFontShouldReturnCorrectFont;
-var
-  tmpFont : TFont;
-  sFont   : String;
-begin
-  //arrange
-  tmpFont := TFont.Create;
-  sFont := '"Ariel", 10, [Bold], [clRed]';
-
-  try
-    //act
-    FScreenSaverConfig.FontList.StringToFont(sFont, tmpFont);
-
-    //assert
-    CheckEquals(tmpFont.Name, 'Ariel');
-    CheckEquals(tmpFont.Size, 10);
-    Check(tmpFont.Style = [fsBold]);
-    CheckEquals(tmpFont.Color, clRed);
-  finally
-    FreeAndNil(tmpFont);
-  end;
 end;
 
 procedure TScreenSaverConfigTests.SuccessShouldBeAStandardStatus;
@@ -129,13 +95,9 @@ end;
 
 procedure TScreenSaverConfigTests.TearDown;
 begin
-  if assigned(backupConfig) then
-  begin
-    backupConfig.SaveConfig;
-    FreeAndNil(backupConfig);
-  end;
   FSettingsDAO := nil;
   FreeAndNil(FScreenSaverConfig);
+  FreeAndNil(backupConfig);
   inherited;
 end;
 
@@ -407,29 +369,6 @@ begin
 
   //assert
   Check(vtStandard = ReturnValue);
-end;
-
-procedure TScreenSaverConfigTests.FontToStringShouldReturnCorrectString;
-var
-  tmpFont : TFont;
-  sFont   : String;
-begin
-  //arrange
-  tmpFont := TFont.Create;
-  tmpFont.Name := 'Ariel';
-  tmpFont.Size := 10;
-  tmpFont.Style := [fsBold];
-  tmpFont.Color := clRed;
-
-  try
-    //act
-    sFont := FScreenSaverConfig.FontList.FontToString(tmpFont);
-
-    //assert
-    CheckEquals(sFont, '"Ariel", 10, [Bold], [clRed]');
-  finally
-    FreeAndNil(tmpFont);
-  end;
 end;
 
 procedure TScreenSaverConfigTests.HttpUrlShouldBeValid;

@@ -6,11 +6,12 @@ uses
   Classes, Graphics, SysUtils, Contnrs;
 
 type
-  EFontConversionError = class(Exception);
   TFontList = class
-  private
+  strict private
     FInternalFontList : TObjectList;
-    procedure DeleteFont(sActivity, sStatus : string);
+    function FontExists(sActivity, sStatus : String; var Index : Integer) : Boolean;
+    procedure AddFont(sActivity, sStatus, sFont : String); overload;
+    procedure AddFont(sActivity, sStatus : String; fFont : TFont); overload;
     function GetFont(sActivity, sStatus: String): TFont;
     procedure SetFont(sActivity, sStatus: String; const Value: TFont);
     function GetFontString(sActivity, sStatus: String): String;
@@ -19,11 +20,10 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    function ValidateFont(value : string) : Boolean;
-    function FontToString(font : TFont): String;
-    procedure StringToFont(sFont : String; var font : TFont);
+
     procedure RenameFont(sOldActivity, sNewActivity, sOldStatus, sNewStatus: string);
     function IndexOf(sActivity, sStatus : string) : Integer;
+    procedure Assign(AFontList : TFontList);
 
     property FontList : TObjectList read FInternalFontList;
     property Font[sActivity, sStatus : String] : TFont read GetFont write SetFont;
@@ -46,109 +46,52 @@ const
 
 procedure TFontList.SetFont(sActivity, sStatus: String; const Value: TFont);
 var
-  asf : TActivityStatusFont;
   iPos : Integer;
 begin
-  iPos := IndexOf(sActivity, sStatus);
-  if iPos >= 0 then
-  begin
-    asf := TActivityStatusFont(FInternalFontList[iPos]);
-    asf.Font := Value;
-  end
+  if FontExists(sActivity, sStatus, iPos) then
+    TActivityStatusFont(FInternalFontList[iPos]).Font.Assign(Value)
   else
-  begin
-    asf := TActivityStatusFont.Create(sActivity, sStatus, FontToString(Value));
-    FInternalFontList.Add(asf);
-  end;
+    AddFont(sActivity, sStatus, Value);
 end;
 
 procedure TFontList.SetFontString(sActivity, sStatus: String;
   const Value: String);
 var
-  tmpFont : TFont;
+  iPos : Integer;
 begin
-  //TODO: Create a cleaner way of setting this
-  tmpFont := TFont.Create;
-  DeleteFont(sActivity, sStatus);
-  StringToFont(Value, tmpFont);
-  SetFont(sActivity, sStatus, tmpFont);
-  FreeAndNil(tmpFont);
+  if FontExists(sActivity, sStatus, iPos) then
+    TActivityStatusFont(FInternalFontList[iPos]).FontAsString := Value
+  else
+    AddFont(sActivity, sStatus, Value);
 end;
 
-procedure TFontList.StringToFont(sFont: String; var font: TFont);
+procedure TFontList.AddFont(sActivity, sStatus, sFont: String);
 var
-  p      : integer;
-  sStyle : string;
+  asf : TActivityStatusFont;
 begin
-  try
-    // get font name
-    p := Pos(',', sFont);
-    font.Name := Copy(sFont, 2, p - 3);
-    Delete(sFont, 1, p);
-
-    // get font size
-    p := Pos(',', sFont);
-    font.Size := StrToInt(Copy(sFont, 2, p - 2));
-    Delete(sFont, 1, p);
-
-    // get font style
-    p := Pos(',', sFont);
-    sStyle := '|' + Copy(sFont, 3, p - 4);
-    Delete(sFont, 1, p);
-
-    // get font color
-    font.Color := StringToColor(Copy(sFont, 3, Length(sFont) - 3));
-
-    // convert str font style to font style
-    font.Style := [];
-
-    if (Pos(csfsBold, sStyle) > 0) then
-      font.Style := font.Style + [fsBold];
-
-    if (Pos(csfsItalic, sStyle ) > 0) then
-      font.Style := font.Style + [fsItalic];
-
-    if (Pos(csfsUnderline, sStyle) > 0) then
-      font.Style := font.Style + [fsUnderline];
-
-    if (Pos(csfsStrikeout, sStyle) > 0) then
-      font.Style := font.Style + [fsStrikeout];
-  except
-    on e: Exception do
-      raise EFontConversionError.Create(e.Message);
-  end;
+  asf := TActivityStatusFont.Create(sActivity, sStatus, sFont);
+  FInternalFontList.Add(asf);
 end;
 
-function TFontList.ValidateFont(value: string): Boolean;
+procedure TFontList.AddFont(sActivity, sStatus: String; fFont: TFont);
 var
-  tmpFont : TFont;
+  asf : TActivityStatusFont;
 begin
-  tmpFont := TFont.Create;
-  Result := False;
-  try
-    try
-      StringToFont(value, tmpFont);
-      Result := True;
-    except
-    end;
-  finally
-    FreeAndNil(tmpFont);
-  end;
+  asf := TActivityStatusFont.Create(sActivity, sStatus, fFont);
+  FInternalFontList.Add(asf);
+end;
+
+procedure TFontList.Assign(AFontList: TFontList);
+begin
+  FreeAndNil(FInternalFontList);
+  FInternalFontList := TObjectList.Create(True);
+  FInternalFontList.Assign(AFontList.FontList);
 end;
 
 constructor TFontList.Create;
 begin
   inherited;
   FInternalFontList := TObjectList.Create(True);
-end;
-
-procedure TFontList.DeleteFont(sActivity, sStatus: string);
-var
-  iPos : Integer;
-begin
-  iPos := IndexOf(sActivity, sStatus);
-  if iPos >= 0 then
-    FInternalFontList.Delete(iPos);
 end;
 
 destructor TFontList.Destroy;
@@ -162,26 +105,10 @@ begin
   inherited;
 end;
 
-function TFontList.FontToString(font: TFont): String;
-var
-  sStyle : String;
+function TFontList.FontExists(sActivity, sStatus : String; var Index : Integer): Boolean;
 begin
-  // convert font style to string
-  sStyle := '';
-  if (fsBold in font.Style) then
-    sStyle := sStyle + csfsBold;
-  if (fsItalic in font.Style ) then
-    sStyle := sStyle + csfsItalic;
-  if (fsUnderline in font.Style) then
-    sStyle := sStyle + csfsUnderline;
-  if (fsStrikeout in font.Style) then
-    sStyle := sStyle + csfsStrikeout;
-
-  if ((Length(sStyle) > 0) and ('|' = sStyle[1])) then
-    sStyle := Copy(sStyle, 2, Length(sStyle) - 1);
-
-  Result := Format('"%s", %d, [%s], [%s]',
-    [font.Name, font.Size, sStyle, ColorToString(font.Color )]);
+  Index := IndexOf(sActivity, sStatus);
+  Result := Index >= 0;
 end;
 
 function TFontList.GetDefaultFontString(sActivity, sStatus: String): String;
@@ -203,23 +130,26 @@ end;
 
 function TFontList.GetFont(sActivity, sStatus: String): TFont;
 var
-  tmpFont : TFont;
   iPos : Integer;
 begin
-  iPos := IndexOf(sActivity, sStatus);
-  if iPos < 0 then
+  if FontExists(sActivity, sStatus, iPos) then
+    Result := TActivityStatusFont(FInternalFontList[iPos]).Font
+  else
   begin
-    tmpFont := TFont.Create;
-    StringToFont(DefaultFontString[sActivity, sStatus], tmpFont);
-    SetFont(sActivity, sStatus, tmpFont);
+    AddFont(sActivity, sStatus, DefaultFontString[sActivity, sStatus]);
+    iPos := IndexOf(sActivity, sStatus);
+    Result := TActivityStatusFont(FInternalFontList[iPos]).Font;
   end;
-  iPos := IndexOf(sActivity, sStatus);
-  Result := TActivityStatusFont(FInternalFontList[iPos]).Font;
 end;
 
 function TFontList.GetFontString(sActivity, sStatus: String): String;
+var
+  iPos : Integer;
 begin
-  Result := FontToString(GetFont(sActivity, sStatus));
+  if FontExists(sActivity, sStatus, iPos) then
+    Result := TActivityStatusFont(FInternalFontList[iPos]).FontAsString
+  else
+    Result := GetDefaultFontString(sActivity, sStatus);
 end;
 
 function TFontList.IndexOf(sActivity, sStatus: string): Integer;

@@ -103,6 +103,9 @@ begin
   FXmlFileUrl := config.XmlFileURL;
   FUpdateFrequency := config.UpdateFrequency;
   FAnimationFrequency := config.AnimationFrequency;
+  FActivityList.Assign(config.ActivityList);
+  FStatusList.Assign(config.StatusList);
+  FFontList.Assign(config.FontList);
 end;
 
 constructor TScreenSaverConfig.Create(settingsDAO : ISettingsRepository);

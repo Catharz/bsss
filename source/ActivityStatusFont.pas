@@ -3,19 +3,21 @@ unit ActivityStatusFont;
 interface
 
 uses
-  Graphics;
+  Graphics, SysUtils;
 
 type
+  EFontConversionError = class(Exception);
   TActivityStatusFont=class
   private
     FActivity : String;
     FStatus : String;
     FFont : TFont;
+    procedure SetFont(const Value: TFont);
     function GetFontAsString: String;
     procedure SetFontAsString(const sFont: String);
-    procedure SetFont(const Value: TFont);
   public
-    constructor Create(sActivity, sStatus, sFont : String);
+    constructor Create(sActivity, sStatus, sFont : String); overload;
+    constructor Create(sActivity, sStatus : String; AFont : TFont); overload;
     destructor Destroy; override;
 
     function IsEqualTo(const Value : TActivityStatusFont) : Boolean;
@@ -31,7 +33,6 @@ implementation
 { TActivityStatusFont }
 
 uses
-  SysUtils,
   FontList;
 
 const
@@ -47,6 +48,15 @@ begin
   FStatus := sStatus;
   FFont := TFont.Create;
   self.FontAsString := sFont;
+end;
+
+constructor TActivityStatusFont.Create(sActivity, sStatus: String;
+  AFont: TFont);
+begin
+  inherited Create;
+  FActivity := sActivity;
+  FStatus := sStatus;
+  FFont := AFont;
 end;
 
 destructor TActivityStatusFont.Destroy;
