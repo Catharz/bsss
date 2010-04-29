@@ -23,15 +23,14 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={win}\system32
-DisableDirPage=true
+DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=true
 OutputBaseFilename={#MySetupFilename}
+OutputDir=C:\dev\Projects\bsss\setup\Output
 Compression=lzma
 SolidCompression=true
 AppCopyright=Craig Read
-CreateAppDir=false
 ShowLanguageDialog=auto
 
 [Languages]
@@ -43,15 +42,24 @@ Root: HKCU; Subkey: Control Panel\Screen Saver.BuildStatus; ValueType: string; V
 Root: HKCU; Subkey: Control Panel\Screen Saver.BuildStatus; ValueType: dword; ValueName: AnimationFrequency; ValueData: 3
 Root: HKCU; Subkey: Control Panel\Screen Saver.BuildStatus; ValueType: dword; ValueName: UpdateFrequency; ValueData: 1
 
+[Tasks]
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+
 [Files]
 Source: {#MyAppOriginPath}\BuildStatus.exe; DestDir: {sys}; DestName: {#MyAppDestName}; Flags: ignoreversion
+Source: {#MyAppOriginPath}\BuildStatus.exe; DestDir: {app}; DestName: {#MyAppExename}; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\Configure Screensaver"; Filename: "{win}\system32\{#MyAppDestName}"; Parameters: "/c"
-Name: "{group}\Start Screensaver"; Filename: "{win}\system32\{#MyAppDestName}"; Parameters: "/s"
+Name: "{group}\Configure Screensaver"; Filename: "{app}\{#MyAppExeName}"; Parameters: "/c"
+Name: "{group}\Start Screensaver"; Filename: "{app}\{#MyAppExeName}"; Parameters: "/s"
 Name: {group}\{cm:ProgramOnTheWeb,{#MyAppName}}; Filename: {#MyAppURL}
 Name: {group}\{cm:UninstallProgram,{#MyAppName}}; Filename: {uninstallexe}
+Name: "{commondesktop}\Configure BuildStatus"; Filename: "{app}\{#MyAppExeName}"; Parameters: "/c"; Tasks: desktopicon
+Name: "{commondesktop}\Start BuildStatus"; Filename: "{app}\{#MyAppExeName}"; Parameters: "/s"; Tasks: desktopicon
+; Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\Configure BuildStatus"; Filename: "{app}\{#MyAppExeName}"; Parameters: "/c"; Tasks: quicklaunchicon
+; Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\Start BuildStatus"; Filename: "{app}\{#MyAppExeName}"; Parameters: "/c"; Tasks: quicklaunchicon
 
 [Run]
 Filename: {win}\system32\{#MyAppDestName}; Description: Configure the screen saver; Flags: postinstall; Parameters: /c; StatusMsg: Configuring Screen Saver
